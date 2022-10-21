@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "114601649993",
+    "project_id": "react-messenger-f2603",
+    "storage_bucket": "react-messenger-f2603.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:114601649993:android:16e3043838c1c6a218dc98",
+        "android_client_info": {
+          "package_name": "com.example.react_messenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "114601649993-oh2nlb5bjqberbfgct0e5atun2h6df2f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADQwLopfmY8Z18AOcrxojIcnDFxg6fQMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "114601649993-oh2nlb5bjqberbfgct0e5atun2h6df2f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "114601649993-49j7q344kd10diq9aoc102l4t6hqq5tc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.reactMessenger"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

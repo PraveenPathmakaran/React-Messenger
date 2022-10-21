@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'responsive/mobile_screen_layout.dart';
@@ -5,7 +7,21 @@ import 'responsive/responsive_screen_layout.dart';
 import 'responsive/web_screen_layout.dart';
 import 'utils/colors.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: 'AIzaSyDMuLBaOJMRQ3W20JEG1dGaGfjbB8gLBuk',
+          appId: '1:114601649993:web:9c8a1ed992fdc0c218dc98',
+          messagingSenderId: '114601649993',
+          projectId: 'react-messenger-f2603',
+          storageBucket: 'react-messenger-f2603.appspot.com'),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
+
   runApp(const MyApp());
 }
 
