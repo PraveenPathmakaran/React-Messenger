@@ -63,9 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   kHeight25,
                   //button login
-                  const LoginButton(
-                    text: 'Login',
-                  ),
+                  // const LoginButton(
+                  //   text: 'Login',
+                  // ),
                   kHeight25,
                   //transition to signing up
                   Row(

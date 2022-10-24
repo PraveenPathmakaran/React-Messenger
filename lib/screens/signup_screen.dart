@@ -14,7 +14,6 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
-
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
@@ -69,8 +68,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   kHeight25,
                   //button login
-                  const LoginButton(
+                  LoginButton(
                     text: 'SignUp',
+                    email: _emailController.text,
+                    fullname: _fullnameController.text,
+                    password: _passwordController.text,
+                    username: _usernameController.text,
                   ),
                   kHeight25,
                   //transition to signing up
