@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import '../const/const.dart';
+import '../resources/auth_methods.dart';
 import '../utils/text_widget.dart';
+import '../utils/utils.dart';
 import '../widgets/login_bottom_container.dart';
-import '../widgets/login_button.dart';
 import '../widgets/text_field_input.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -18,6 +21,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
 
+  Uint8List? _image;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -29,20 +34,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 150,
-                bottom: 80,
-              ),
-              child: Column(
+        child: Container(
+          padding: const EdgeInsets.only(left: 20, right: 20),
+          child: ListView(
+            children: <Widget>[
+              Column(
                 children: <Widget>[
                   //Heading
-                  const TitleWidget(title: 'React Messenger'),
                   kHeight50,
+                  const TitleWidget(title: 'React Messenger'),
+                  kHeight25,
+                  //profile image
+                  Stack(
+                    children: <Widget>[
+                      if (_image != null)
+                        CircleAvatar(
+                          radius: 64,
+                          backgroundImage: MemoryImage(_image!),
+                          backgroundColor: Colors.red,
+                        )
+                      else
+                        GestureDetector(
+                          onTap: () async {
+                            _image = await pickImage(ImageSource.gallery);
+                            setState(() {});
+                          },
+                          child: const CircleAvatar(
+                            radius: 64,
+                            backgroundImage:
+                                AssetImage('assets/images/defaultProfile.jpg'),
+                            backgroundColor: Colors.red,
+                          ),
+                        ),
+                      Positioned(
+                        bottom: -10,
+                        left: 80,
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.add_a_photo),
+                        ),
+                      )
+                    ],
+                  ),
+                  kHeight25,
                   //text field input for email
                   TextFieldInput(
                       textEditingController: _emailController,
@@ -68,12 +102,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   kHeight25,
                   //button login
-                  LoginButton(
-                    text: 'SignUp',
-                    email: _emailController.text,
-                    fullname: _fullnameController.text,
-                    password: _passwordController.text,
-                    username: _usernameController.text,
+                  ElevatedButton(
+                    onPressed: () async {
+                      final String res = await AuthMethods().signUpUser(
+                        email: _emailController.text,
+                        fullname: _passwordController.text,
+                        username: _fullnameController.text,
+                        password: _passwordController.text,
+                        file: _image!,
+                      );
+                      print(res);
+                    },
+                    style: buttonStyle,
+                    child: const Text('SignUp'),
                   ),
                   kHeight25,
                   //transition to signing up
@@ -86,9 +127,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ],
                   )
                 ],
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
