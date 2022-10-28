@@ -3,10 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import '../const/const.dart';
 import '../resources/auth_methods.dart';
+import '../responsive/mobile_screen_layout.dart';
+import '../responsive/responsive_screen_layout.dart';
+import '../responsive/web_screen_layout.dart';
+import '../utils/colors.dart';
 import '../utils/text_widget.dart';
 import '../utils/utils.dart';
 import '../widgets/login_bottom_container.dart';
 import '../widgets/text_field_input.dart';
+import 'login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -20,14 +25,51 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
-
   Uint8List? _image;
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> signUpUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final String res = await AuthMethods().signUpUser(
+      email: _emailController.text,
+      fullname: _passwordController.text,
+      username: _fullnameController.text,
+      password: _passwordController.text,
+      file: _image!,
+    );
+    setState(() {
+      _isLoading = false;
+    });
+    if (res != 'success') {
+      // ignore: use_build_context_synchronously
+      showSnackBar(res, context);
+    } else {
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const ResponsiveLayout(
+              webScreenLayout: WebScreenLayout(),
+              mobileScreenLayout: MobileScreenLayout()),
+        ),
+      );
+    }
+  }
+
+  void navigateToLogin() {
+    Navigator.of(context).push(
+      MaterialPageRoute<Widget>(
+        builder: (BuildContext context) => const LoginScreen(),
+      ),
+    );
   }
 
   @override
@@ -102,19 +144,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   kHeight25,
                   //button login
+
                   ElevatedButton(
                     onPressed: () async {
-                      final String res = await AuthMethods().signUpUser(
-                        email: _emailController.text,
-                        fullname: _passwordController.text,
-                        username: _fullnameController.text,
-                        password: _passwordController.text,
-                        file: _image!,
-                      );
-                      print(res);
+                      await signUpUser();
                     },
                     style: buttonStyle,
-                    child: const Text('SignUp'),
+                    child: _isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ))
+                        : const Text('SignUp'),
                   ),
                   kHeight25,
                   //transition to signing up

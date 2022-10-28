@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:react_messenger/utils/colors.dart';
 
 import '../const/const.dart';
+import '../resources/auth_methods.dart';
+import '../responsive/mobile_screen_layout.dart';
+import '../responsive/responsive_screen_layout.dart';
+import '../responsive/web_screen_layout.dart';
 import '../utils/text_widget.dart';
+import '../utils/utils.dart';
 import '../widgets/login_bottom_container.dart';
-import '../widgets/login_button.dart';
 import '../widgets/text_field_input.dart';
+import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,12 +23,46 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
 
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().loginUser(
+        email: _emailController.text, password: _passwordController.text);
+
+    if (res == 'success') {
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const ResponsiveLayout(
+              webScreenLayout: WebScreenLayout(),
+              mobileScreenLayout: MobileScreenLayout()),
+        ),
+      );
+    } else {
+      // ignore: use_build_context_synchronously
+      showSnackBar(res, context);
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void navigateToSignUp() {
+    Navigator.of(context).push(
+      MaterialPageRoute<Widget>(
+        builder: (BuildContext context) => const SignUpScreen(),
+      ),
+    );
   }
 
   @override
@@ -62,18 +102,30 @@ class _LoginScreenState extends State<LoginScreen> {
                     isPass: true,
                   ),
                   kHeight25,
-                  //button login
-                  // const LoginButton(
-                  //   text: 'Login',
-                  // ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await loginUser();
+                    },
+                    style: buttonStyle,
+                    child: _isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ))
+                        : const Text('SignUp'),
+                  ),
                   kHeight25,
                   //transition to signing up
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const <Widget>[
-                      LoginBottomContainer(title: "Don't have an account"),
-                      LoginBottomContainer(
-                          title: 'Sign Up', fontWeight: FontWeight.bold),
+                    children: <Widget>[
+                      const LoginBottomContainer(
+                          title: "Don't have an account"),
+                      GestureDetector(
+                        onTap: navigateToSignUp,
+                        child: const LoginBottomContainer(
+                            title: 'Sign Up', fontWeight: FontWeight.bold),
+                      ),
                     ],
                   )
                 ],
