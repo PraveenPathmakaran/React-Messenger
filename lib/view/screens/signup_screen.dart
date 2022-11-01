@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import '../const/const.dart';
-import '../resources/auth_methods.dart';
-import '../responsive/mobile_screen_layout.dart';
-import '../responsive/responsive_screen_layout.dart';
-import '../responsive/web_screen_layout.dart';
-import '../utils/colors.dart';
-import '../utils/text_widget.dart';
-import '../utils/utils.dart';
+import '../../const/const.dart';
+import '../../controller/resources/auth_methods.dart';
+import 'home_screen.dart';
+import '../../utils/colors.dart';
+import '../../utils/text_widget.dart';
+import '../../utils/utils.dart';
 import '../widgets/login_bottom_container.dart';
 import '../widgets/text_field_input.dart';
 import 'login_screen.dart';
@@ -56,9 +54,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // ignore: use_build_context_synchronously
       Navigator.of(context).pushReplacement(
         MaterialPageRoute<Widget>(
-          builder: (BuildContext context) => const ResponsiveLayout(
-              webScreenLayout: WebScreenLayout(),
-              mobileScreenLayout: MobileScreenLayout()),
+          builder: (BuildContext context) => const MobileScreenLayout(),
         ),
       );
     }
@@ -159,12 +155,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   kHeight25,
                   //transition to signing up
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const <Widget>[
-                      LoginBottomContainer(
-                          title:
-                              'By signing up, you agree to our Terms,\n Privacy Policy and Cookies Policy.'),
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const <Widget>[
+                          LoginBottomContainer(
+                              title:
+                                  'By signing up, you agree to our Terms,\n Privacy Policy and Cookies Policy.'),
+                        ],
+                      ),
+                      GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: const LoginBottomContainer(title: 'Login?'))
                     ],
                   )
                 ],

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:react_messenger/utils/colors.dart';
 import 'package:react_messenger/utils/global_variables.dart';
-
-import '../models/user.dart' as model;
+import '../../controller/providers/user_provider.dart';
 
 class MobileScreenLayout extends StatefulWidget {
   const MobileScreenLayout({super.key});
@@ -13,13 +13,20 @@ class MobileScreenLayout extends StatefulWidget {
 }
 
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
-  int _page = 0;
+  int _page = 4;
   late PageController pageController;
 
   @override
   void initState() {
     super.initState();
-    pageController = PageController();
+    addData();
+    pageController = PageController(initialPage: 4);
+  }
+
+  Future<void> addData() async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    await userProvider.refreshUser();
   }
 
   @override

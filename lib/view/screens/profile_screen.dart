@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:react_messenger/resources/auth_methods.dart';
-import 'package:react_messenger/resources/firestore_methods.dart';
-import 'package:react_messenger/screens/login_screen.dart';
+import 'package:react_messenger/controller/resources/auth_methods.dart';
+import 'package:react_messenger/controller/resources/firestore_methods.dart';
+import 'package:react_messenger/view/screens/login_screen.dart';
 
 import 'package:react_messenger/utils/colors.dart';
 import 'package:react_messenger/utils/utils.dart';
-import 'package:react_messenger/widgets/follow_button.dart';
+import 'package:react_messenger/view/widgets/follow_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key, required this.uid});
@@ -106,6 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ? FollowButton(
                                             function: () async {
                                               await AuthMethods().signOut();
+                                              if (!mounted) return;
                                               Navigator.of(context)
                                                   .pushReplacement(
                                                 MaterialPageRoute(
@@ -164,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.only(top: 15),
                         child: Text(
                           userData['username'],
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Container(
@@ -202,13 +203,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         itemBuilder: (context, index) {
                           DocumentSnapshot snap =
                               (snapshot.data! as dynamic).docs[index];
-                          return Container(
-                            child: Image(
-                              image: NetworkImage(
-                                (snap.data()! as dynamic)['postUrl'],
-                              ),
-                              fit: BoxFit.cover,
+                          return Image(
+                            image: NetworkImage(
+                              (snap.data()! as dynamic)['postUrl'],
                             ),
+                            fit: BoxFit.cover,
                           );
                         },
                       );

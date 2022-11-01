@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:react_messenger/models/posts.dart';
-import 'package:react_messenger/resources/storage_methods.dart';
+import 'package:react_messenger/controller/resources/storage_methods.dart';
 import 'package:uuid/uuid.dart';
 
 class FirestoreMethods {
@@ -53,7 +53,9 @@ class FirestoreMethods {
         });
       }
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
     }
   }
 
@@ -76,10 +78,14 @@ class FirestoreMethods {
           'datePublished': DateTime.now(),
         });
       } else {
-        print('Text is empty');
+        if (kDebugMode) {
+          print('Text is empty');
+        }
       }
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
     }
   }
 
@@ -88,7 +94,9 @@ class FirestoreMethods {
   Future<void> deletePost(String postId) async {
     try {
       await _firestore.collection('posts').doc(postId).delete();
-    } catch (e) {}
+    } catch (e) {
+      e.toString();
+    }
   }
 
   Future<void> followUser(String uid, String followId) async {
@@ -113,7 +121,9 @@ class FirestoreMethods {
         });
       }
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
     }
   }
 }

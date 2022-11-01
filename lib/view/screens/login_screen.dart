@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:react_messenger/utils/colors.dart';
 
-import '../const/const.dart';
-import '../resources/auth_methods.dart';
-import '../responsive/mobile_screen_layout.dart';
-import '../responsive/responsive_screen_layout.dart';
-import '../responsive/web_screen_layout.dart';
-import '../utils/text_widget.dart';
-import '../utils/utils.dart';
+import '../../const/const.dart';
+import '../../controller/resources/auth_methods.dart';
+import 'home_screen.dart';
+import '../../utils/text_widget.dart';
+import '../../utils/utils.dart';
 import '../widgets/login_bottom_container.dart';
 import '../widgets/text_field_input.dart';
 import 'signup_screen.dart';
@@ -43,9 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // ignore: use_build_context_synchronously
       Navigator.of(context).pushReplacement(
         MaterialPageRoute<Widget>(
-          builder: (BuildContext context) => const ResponsiveLayout(
-              webScreenLayout: WebScreenLayout(),
-              mobileScreenLayout: MobileScreenLayout()),
+          builder: (BuildContext context) => const MobileScreenLayout(),
         ),
       );
     } else {

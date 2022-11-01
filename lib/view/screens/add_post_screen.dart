@@ -1,13 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:react_messenger/models/user.dart';
-import 'package:react_messenger/providers/user_provider.dart';
-import 'package:react_messenger/resources/firestore_methods.dart';
+import 'package:react_messenger/controller/providers/user_provider.dart';
+import 'package:react_messenger/controller/resources/firestore_methods.dart';
 import 'package:react_messenger/utils/colors.dart';
 import 'package:react_messenger/utils/utils.dart';
 
@@ -45,11 +43,13 @@ class _AddPostScreenState extends State<AddPostScreen> {
           _isLoading = false;
         });
         clearImage();
+        if (!mounted) return;
         showSnackBar('Posted', context);
       } else {
         setState(() {
           _isLoading = false;
         });
+        if (!mounted) return;
         showSnackBar(res, context);
       }
     } catch (e) {
@@ -118,11 +118,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Widget build(BuildContext context) {
     final User user = Provider.of<UserProvider>(context).getUser;
     return _file == null
-        ? Center(
-            child: IconButton(
-              icon: const Icon(Icons.upload),
-              onPressed: () => _selectImage(context),
+        ? IconButton(
+            icon: const Icon(
+              Icons.photo_library_outlined,
+              size: 200,
             ),
+            onPressed: () => _selectImage(context),
           )
         : Scaffold(
             appBar: AppBar(

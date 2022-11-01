@@ -1,18 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:react_messenger/resources/firestore_methods.dart';
+import 'package:react_messenger/controller/resources/firestore_methods.dart';
 
 import 'package:react_messenger/utils/colors.dart';
 
-import '../models/user.dart';
-import '../providers/user_provider.dart';
+import '../../models/user.dart';
+import '../../controller/providers/user_provider.dart';
 import '../widgets/comment_card.dart';
 
 class CommentsScreen extends StatefulWidget {
   final snap;
 
-  CommentsScreen({super.key, required this.snap});
+  const CommentsScreen({super.key, required this.snap});
 
   @override
   State<CommentsScreen> createState() => _CommentsScreenState();
@@ -94,7 +94,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
                   });
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                   child: const Text(
                     'Post',
                     style: TextStyle(color: Colors.blueAccent),

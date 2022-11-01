@@ -3,11 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'providers/user_provider.dart';
-import 'responsive/mobile_screen_layout.dart';
-import 'responsive/responsive_screen_layout.dart';
-import 'responsive/web_screen_layout.dart';
-import 'screens/login_screen.dart';
+import 'package:react_messenger/view/screens/chat/chat_screen.dart';
+import 'package:react_messenger/view/screens/chat/chatlist_screen.dart';
+import 'controller/providers/user_provider.dart';
+import 'view/screens/home_screen.dart';
+import 'view/screens/login_screen.dart';
 import 'utils/colors.dart';
 
 void main() async {
@@ -49,10 +49,7 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return const ResponsiveLayout(
-                webScreenLayout: WebScreenLayout(),
-                mobileScreenLayout: MobileScreenLayout(),
-              );
+              return const ChatScreen();
             } else if (snapshot.hasError) {
               return Center(
                 child: Text('${snapshot.error}'),
@@ -65,7 +62,7 @@ class MyApp extends StatelessWidget {
                 ),
               );
             }
-            return const LoginScreen();
+            return const ChatScreen();
           },
         ),
       ),
