@@ -1,6 +1,6 @@
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
 class StorageMethods {
@@ -8,7 +8,7 @@ class StorageMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 //add image to firebase
   Future<String> uploadImageStorage(
-      String childName, Uint8List file, bool isPost) async {
+      String childName, String filePath, bool isPost) async {
     Reference ref =
         _storage.ref().child(childName).child(_auth.currentUser!.uid);
 
@@ -17,7 +17,7 @@ class StorageMethods {
       ref = ref.child(id);
     }
 
-    final UploadTask uploadTask = ref.putData(file);
+    final UploadTask uploadTask = ref.putFile(File(filePath));
     final TaskSnapshot snap = await uploadTask;
     final String downloadUrl = await snap.ref.getDownloadURL();
     return downloadUrl;

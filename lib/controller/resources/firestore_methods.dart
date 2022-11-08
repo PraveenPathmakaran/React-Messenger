@@ -9,7 +9,7 @@ class FirestoreMethods {
 //upload post
   Future<String> uploadPost(
     String description,
-    Uint8List file,
+    String filePath,
     String uid,
     String username,
     String profileImage,
@@ -18,7 +18,7 @@ class FirestoreMethods {
     try {
       String photoUrl = await StorageMethods().uploadImageStorage(
         'posts',
-        file,
+        filePath,
         true,
       );
       String postId = const Uuid().v1();

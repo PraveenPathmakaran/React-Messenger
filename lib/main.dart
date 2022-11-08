@@ -1,30 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:react_messenger/view/screens/chat/chat_screen.dart';
-import 'package:react_messenger/view/screens/chat/chatlist_screen.dart';
 import 'controller/providers/user_provider.dart';
-import 'view/screens/home_screen.dart';
-import 'view/screens/login_screen.dart';
+import 'view/screens/home/home_screen.dart';
+import 'view/screens/login/login_screen.dart';
 import 'utils/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-          apiKey: 'AIzaSyDMuLBaOJMRQ3W20JEG1dGaGfjbB8gLBuk',
-          appId: '1:114601649993:web:9c8a1ed992fdc0c218dc98',
-          messagingSenderId: '114601649993',
-          projectId: 'react-messenger-f2603',
-          storageBucket: 'react-messenger-f2603.appspot.com'),
-    );
-  } else {
-    await Firebase.initializeApp();
-  }
-
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -36,10 +22,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => UserProvider(),
+          create: (context) => UserProvider(),
         ),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'React Messenger',
         theme: ThemeData.dark().copyWith(
@@ -49,7 +35,7 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return const ChatScreen();
+              return const MobileScreenLayout();
             } else if (snapshot.hasError) {
               return Center(
                 child: Text('${snapshot.error}'),
@@ -62,7 +48,7 @@ class MyApp extends StatelessWidget {
                 ),
               );
             }
-            return const ChatScreen();
+            return LoginScreen();
           },
         ),
       ),

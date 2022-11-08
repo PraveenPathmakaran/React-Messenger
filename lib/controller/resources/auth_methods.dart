@@ -1,13 +1,15 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../models/user.dart' as model;
 import 'storage_methods.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   Future<model.User> getUserDetails() async {
     User currentUser = _auth.currentUser!;
@@ -20,17 +22,18 @@ class AuthMethods {
   //sign up user
   Future<String> signUpUser({
     required String email,
-    required String fullname,
+    required String rePassword,
     required String username,
     required String password,
-    required Uint8List file,
+    required String file,
   }) async {
     String res = 'Some error';
     try {
       if (email.isNotEmpty ||
           password.isNotEmpty ||
-          fullname.isNotEmpty ||
-          username.isNotEmpty) {
+          rePassword.isNotEmpty ||
+          username.isNotEmpty ||
+          file.isNotEmpty) {
         final UserCredential cred = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
@@ -44,7 +47,6 @@ class AuthMethods {
             email: email,
             username: username,
             uid: cred.user!.uid,
-            fullname: fullname,
             photoUrl: photoUrl,
             followers: [],
             following: []);
@@ -76,6 +78,36 @@ class AuthMethods {
       res = err.toString();
     }
     return res;
+  }
+
+  Future<void> googleLogin() async {
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    if (googleUser == null) return;
+    final googleAuth = await googleUser.authentication;
+
+    try {
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
+      if (userCredential.credential == null || _auth.currentUser == null) {
+        return;
+      }
+
+      model.User user = model.User(
+          email: _auth.currentUser!.email!,
+          username: _auth.currentUser!.displayName!,
+          uid: userCredential.user!.uid,
+          photoUrl: _auth.currentUser!.photoURL!,
+          followers: [],
+          following: []);
+      await _firestore.collection('user').doc(userCredential.user!.uid).set(
+            user.toJson(),
+          );
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> signOut() async {

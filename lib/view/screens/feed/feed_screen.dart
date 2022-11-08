@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:react_messenger/utils/colors.dart';
-import 'package:react_messenger/view/widgets/post_card.dart';
+import 'package:react_messenger/view/screens/feed/widget/post_card.dart';
 
 class FeedScreen extends StatelessWidget {
-  const FeedScreen({super.key});
+  FeedScreen({super.key});
+  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,16 +23,24 @@ class FeedScreen extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           }
-          return ListView.separated(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) => PostCard(
-              snap: snapshot.data!.docs[index].data(),
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                ListView.separated(
+                  controller: scrollController,
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) => PostCard(
+                    snap1: snapshot.data!.docs[index].data(),
+                  ),
+                  separatorBuilder: (context, index) {
+                    return const Divider(
+                      thickness: 2,
+                    );
+                  },
+                ),
+              ],
             ),
-            separatorBuilder: (context, index) {
-              return const Divider(
-                thickness: 2,
-              );
-            },
           );
         },
       ),

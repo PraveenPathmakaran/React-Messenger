@@ -5,12 +5,12 @@ import 'package:react_messenger/controller/resources/firestore_methods.dart';
 
 import 'package:react_messenger/utils/colors.dart';
 
-import '../../models/user.dart';
-import '../../controller/providers/user_provider.dart';
-import '../widgets/comment_card.dart';
+import '../../../models/user.dart';
+import '../../../controller/providers/user_provider.dart';
+import 'widget/comment_card.dart';
 
 class CommentsScreen extends StatefulWidget {
-  final snap;
+  final Map<String, dynamic> snap;
 
   const CommentsScreen({super.key, required this.snap});
 
@@ -32,7 +32,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
     return Scaffold(
       backgroundColor: mobileBackgroundColor,
       appBar: AppBar(
-        title: const Text('Commentss'),
+        title: const Text('Comments'),
         centerTitle: false,
       ),
       body: StreamBuilder(
@@ -52,9 +52,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
             );
           }
           return ListView.builder(
-              itemCount: (snapshot.data! as dynamic).docs.length,
+              itemCount: (snapshot.data!).docs.length,
               itemBuilder: (context, index) =>
-                  CommentCard(snap: (snapshot.data! as dynamic).docs[index]));
+                  CommentCard(snap: (snapshot.data!).docs[index]));
         },
       ),
       bottomNavigationBar: SafeArea(

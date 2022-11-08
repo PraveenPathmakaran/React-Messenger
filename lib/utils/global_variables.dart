@@ -1,19 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:react_messenger/view/screens/add_post_screen.dart';
-import 'package:react_messenger/view/screens/feed_screen.dart';
-import 'package:react_messenger/view/screens/profile_screen.dart';
+import 'package:react_messenger/view/screens/addpost/add_post_screen.dart';
+import 'package:react_messenger/view/screens/chat/chatlist_screen.dart';
+import 'package:react_messenger/view/screens/feed/feed_screen.dart';
+import 'package:react_messenger/view/screens/profile/profile_screen.dart';
 
-import '../view/screens/search_screen.dart';
+import '../view/screens/search/search_screen.dart';
 
 const int webScreenSize = 600;
 
 List<Widget> homeScreenItems = [
-  const FeedScreen(),
+  FeedScreen(),
   const SearchScreen(),
-  const AddPostScreen(),
-  const Text('notify'),
+  AddPostScreen(),
+  const ChatListScreen(),
   ProfileScreen(
-    uid: FirebaseAuth.instance.currentUser!.uid,
+    userUid: FirebaseAuth.instance.currentUser!.uid,
   ),
 ];

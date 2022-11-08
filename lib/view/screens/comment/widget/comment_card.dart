@@ -35,7 +35,7 @@ class _CommentCardState extends State<CommentCard> {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
-                          text: '${widget.snap['text']}',
+                          text: '    ${widget.snap['text']}',
                         ),
                       ],
                     ),
@@ -51,13 +51,6 @@ class _CommentCardState extends State<CommentCard> {
                   ),
                 ],
               ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            child: const Icon(
-              Icons.favorite,
-              size: 16,
             ),
           ),
         ],

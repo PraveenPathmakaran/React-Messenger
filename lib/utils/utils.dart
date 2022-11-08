@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
-Future<Uint8List> pickImage(ImageSource source) async {
+Future<String> pickImage(ImageSource source) async {
   final ImagePicker imagePicker = ImagePicker();
-  final XFile? file = await imagePicker.pickImage(source: source);
-  if (file != null) {
-    return file.readAsBytes();
-  }
-  final ByteData byteData =
-      await rootBundle.load('assets/images/defaultProfile.jpg');
+  try {
+    XFile? file = await imagePicker.pickImage(source: source, imageQuality: 30);
 
-  final Uint8List bytes = byteData.buffer.asUint8List();
-  return bytes;
+    if (file != null) {
+      String imagePath = await cropImage(imageFile: file.path);
+      return imagePath;
+    }
+  } catch (e) {
+    return e.toString();
+  }
+
+  return 'No image selected';
 }
 
-Future<Uint8List> imageGet() async {
-  final ByteData bytes =
-      await rootBundle.load('assets/images/defaultProfile.jpg');
-  final Uint8List list = bytes.buffer.asUint8List();
-  return list;
+Future<String> cropImage({required String imageFile}) async {
+  CroppedFile? croppedFile =
+      await ImageCropper().cropImage(sourcePath: imageFile);
+  if (croppedFile == null) return 'No image selected';
+  return croppedFile.path;
 }
 
 void showSnackBar(String content, BuildContext context) {

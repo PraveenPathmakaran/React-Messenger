@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:react_messenger/utils/colors.dart';
+import 'package:react_messenger/view/screens/chat/chat_screen.dart';
 
 class ChatListScreen extends StatelessWidget {
   const ChatListScreen({super.key});
@@ -63,15 +64,17 @@ class PreviousChat extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (context, index) {
-              return const ListTile(
-                leading: CircleAvatar(
+              return ListTile(
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const ChatScreen())),
+                leading: const CircleAvatar(
                   radius: 25,
                   backgroundImage: NetworkImage(
                       'https://www.tamiu.edu/newsinfo/images/student-life/campus-scenery.JPG'),
                 ),
-                title: Text('Username'),
-                subtitle: Text('Subtitle'),
-                trailing: Icon(
+                title: const Text('Username'),
+                subtitle: const Text('Subtitle'),
+                trailing: const Icon(
                   Icons.brightness_1,
                   color: Colors.green,
                   size: 10,

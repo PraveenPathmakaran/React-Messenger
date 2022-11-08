@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:react_messenger/view/screens/profile_screen.dart';
+import 'package:react_messenger/view/screens/profile/profile_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -23,14 +23,23 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextFormField(
-          controller: searchController,
-          decoration: const InputDecoration(labelText: "Search for a user"),
-          onFieldSubmitted: (String _) {
-            setState(() {
-              isShowUsers = true;
-            });
-          },
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: searchController,
+                decoration:
+                    const InputDecoration(labelText: "Search for a user"),
+                onFieldSubmitted: (String _) {
+                  setState(() {
+                    isShowUsers = true;
+                  });
+                },
+              ),
+            ),
+            Icon(Icons.search),
+          ],
         ),
       ),
       body: isShowUsers
@@ -53,7 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => ProfileScreen(
-                              uid: (snapshot.data! as dynamic).docs[index]
+                              userUid: (snapshot.data! as dynamic).docs[index]
                                   ['uid'],
                             ),
                           ),
