@@ -1,12 +1,14 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:get/get.dart';
+import 'package:react_messenger/controller/addpost_controller.dart';
 import 'package:uuid/uuid.dart';
 
 class StorageMethods {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
 //add image to firebase
   Future<String> uploadImageStorage(
       String childName, String filePath, bool isPost) async {
@@ -19,6 +21,15 @@ class StorageMethods {
     }
 
     final UploadTask uploadTask = ref.putFile(File(filePath));
+
+    //upload progress
+
+    uploadTask.snapshotEvents.listen((event) {
+      Get.find<AddPostController>().progress.value =
+          ((event.bytesTransferred.toDouble() / event.totalBytes.toDouble()) *
+                  100)
+              .roundToDouble();
+    });
     final TaskSnapshot snap = await uploadTask;
     final String downloadUrl = await snap.ref.getDownloadURL();
     return downloadUrl;

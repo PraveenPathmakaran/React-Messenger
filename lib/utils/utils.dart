@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 Future<String> pickImage(ImageSource source) async {
   final ImagePicker imagePicker = ImagePicker();
   try {
-    XFile? file = await imagePicker.pickImage(source: source, imageQuality: 30);
+    XFile? file = await imagePicker.pickImage(source: source);
 
     if (file != null) {
       String imagePath = await cropImage(imageFile: file.path);

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:react_messenger/const/const.dart';
 import 'package:react_messenger/controller/addpost_controller.dart';
+import 'package:react_messenger/controller/resources/storage_methods.dart';
 
 class AddPostScreen extends StatelessWidget {
   AddPostScreen({super.key});
@@ -20,9 +21,25 @@ class AddPostScreen extends StatelessWidget {
     return Obx(
       (() {
         return addPostController.isLoading.value
-            ? const Center(
-                child: CircularProgressIndicator(
-                color: Colors.white,
+            ? Center(
+                child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    addPostController.progress.value.toString(),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                  ),
+                  const Text(
+                    'Upload progress',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                  ),
+                ],
               ))
             : addPostController.filePath.value == null ||
                     addPostController.filePath.value == 'No image selected'

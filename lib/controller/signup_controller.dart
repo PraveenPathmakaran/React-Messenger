@@ -74,6 +74,7 @@ class SignUpController extends GetxController {
         ),
         (Route<dynamic> route) => false,
       );
+      showSnackBar('Sign up Successfull', context);
     }
   }
 

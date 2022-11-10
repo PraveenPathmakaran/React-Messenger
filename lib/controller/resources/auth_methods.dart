@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:react_messenger/controller/login_controller.dart';
 import '../../models/user.dart' as model;
 import 'storage_methods.dart';
 
@@ -10,6 +12,7 @@ class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  final LoginController loginController = Get.put(LoginController());
 
   Future<model.User> getUserDetails() async {
     User currentUser = _auth.currentUser!;
@@ -80,20 +83,23 @@ class AuthMethods {
     return res;
   }
 
-  Future<void> googleLogin() async {
+  Future<String> googleLogin() async {
+    String res = 'Some error';
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser == null) return;
+    if (googleUser == null) return 'User is null';
     final googleAuth = await googleUser.authentication;
 
     try {
+      loginController.gIsLoading.value = true;
       final OAuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
 
       if (userCredential.credential == null || _auth.currentUser == null) {
-        return;
+        return 'User credential null';
       }
+      res = 'Success';
 
       model.User user = model.User(
           email: _auth.currentUser!.email!,
@@ -105,9 +111,11 @@ class AuthMethods {
       await _firestore.collection('user').doc(userCredential.user!.uid).set(
             user.toJson(),
           );
+      loginController.gIsLoading.value = false;
     } catch (e) {
       log(e.toString());
     }
+    return res;
   }
 
   Future<void> signOut() async {

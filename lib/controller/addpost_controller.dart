@@ -13,6 +13,7 @@ class AddPostController extends GetxController {
   final Rx<bool> isLoading = false.obs;
   final Rxn<User> userData = Rxn<User>();
   final bool mounted = true;
+  Rx<double> progress = 0.0.obs;
 
   AuthMethods currentUser = AuthMethods();
 

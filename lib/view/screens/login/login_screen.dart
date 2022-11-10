@@ -4,6 +4,8 @@ import 'package:lottie/lottie.dart';
 import 'package:react_messenger/controller/login_controller.dart';
 import 'package:react_messenger/controller/resources/auth_methods.dart';
 import 'package:react_messenger/utils/colors.dart';
+import 'package:react_messenger/utils/utils.dart';
+import 'package:react_messenger/view/screens/home/home_screen.dart';
 import '../../../const/const.dart';
 import '../../widgets/login_bottom_container.dart';
 import '../../widgets/text_field_input.dart';
@@ -14,6 +16,7 @@ class LoginScreen extends StatelessWidget {
 
   final LoginController loginController = Get.put(LoginController());
   final AuthMethods authMethods = AuthMethods();
+  final bool mounted = true;
 
   @override
   Widget build(BuildContext context) {
@@ -61,26 +64,33 @@ class LoginScreen extends StatelessWidget {
                   ),
                   kHeight25,
                   ElevatedButton(
-                    onPressed: () async {
-                      await loginController.loginUser(context);
-                    },
-                    style: buttonStyle,
-                    child: loginController.isLoading.value
-                        ? const Center(
-                            child: CircularProgressIndicator(
-                            color: primaryColor,
-                          ))
-                        : const Text('SignUp'),
-                  ),
+                      onPressed: () async {
+                        await loginController.loginUser(context);
+                      },
+                      style: buttonStyle,
+                      child: Obx(() {
+                        return loginController.isLoading.value
+                            ? const Center(
+                                child: CircularProgressIndicator(
+                                color: primaryColor,
+                              ))
+                            : const Text('Log In');
+                      })),
                   kHeight25,
                   const LoginBottomContainer(title: 'Or sign in with'),
-                  GestureDetector(
-                    onTap: () => authMethods.googleLogin(),
-                    child: const Image(
-                      width: 40,
-                      image: AssetImage('assets/images/google.png'),
-                    ),
-                  ),
+                  Obx(() {
+                    return GestureDetector(
+                      onTap: () async {
+                        loginController.googleSignup(context);
+                      },
+                      child: loginController.gIsLoading.value
+                          ? circularProgressIndicator
+                          : const Image(
+                              width: 40,
+                              image: AssetImage('assets/images/google.png'),
+                            ),
+                    );
+                  }),
                   kHeight10,
                   //transition to signing up
                   Row(

@@ -10,6 +10,7 @@ class LoginController extends GetxController {
 
   final TextEditingController passwordController = TextEditingController();
   Rx<bool> isLoading = false.obs;
+  Rx<bool> gIsLoading = false.obs;
   bool mounted = true;
 
   Future<void> loginUser(BuildContext context) async {
@@ -29,6 +30,19 @@ class LoginController extends GetxController {
     }
 
     isLoading.value = false;
+  }
+
+  Future<void> googleSignup(BuildContext context) async {
+    final String result = await AuthMethods().googleLogin();
+    if (!mounted) return;
+    if (result == 'Success') {
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (context) {
+        return const MobileScreenLayout();
+      }));
+    } else {
+      showSnackBar(result, context);
+    }
   }
 
   @override
