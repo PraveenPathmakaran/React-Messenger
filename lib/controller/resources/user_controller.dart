@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:react_messenger/controller/resources/auth_methods.dart';
 
@@ -8,7 +10,11 @@ class UserController extends GetxController {
   AuthMethods currentUser = AuthMethods();
 
   Future<void> getUser() async {
-    userData.value = await currentUser.getUserDetails();
+    try {
+      userData.value = await currentUser.getUserDetails();
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   @override

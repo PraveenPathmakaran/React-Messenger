@@ -49,16 +49,6 @@ class AddPostScreen extends StatelessWidget {
                       )
                     ],
                   )
-
-                // IconButton(
-                //     icon: const Icon(
-                //       Icons.photo_library_outlined,
-                //       size: 200,
-                //     ),
-                //     onPressed: () {
-                //       addPostController.selectImage(context);
-                //     },
-                //   )
                 : Scaffold(
                     body: Container(
                       alignment: Alignment.center,

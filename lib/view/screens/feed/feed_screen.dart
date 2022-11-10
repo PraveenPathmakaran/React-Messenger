@@ -31,7 +31,7 @@ class FeedScreen extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: snapshot.data!.docs.length,
                   itemBuilder: (context, index) => PostCard(
-                    snap1: snapshot.data!.docs[index].data(),
+                    postSnapShot: snapshot.data!.docs[index].data(),
                   ),
                   separatorBuilder: (context, index) {
                     return const Divider(

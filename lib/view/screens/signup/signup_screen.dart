@@ -97,11 +97,11 @@ class SignUpScreen extends StatelessWidget {
                   kHeight25,
                   TextFieldInput(
                     textEditingController:
-                        signUpController.reEnterPasswordController,
-                    hintText: 'Re enter your passoword',
+                        signUpController.conformPasswordController,
+                    hintText: 'Conform your passoword',
                     textInputType: TextInputType.text,
                     isPass: true,
-                    label: "Re-enter password",
+                    label: "Conform password",
                     icon: Icons.lock,
                   ),
                   kHeight25,

@@ -1,111 +1,108 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
+import 'package:react_messenger/const/const.dart';
 import 'package:react_messenger/controller/resources/firestore_methods.dart';
-
+import 'package:react_messenger/controller/resources/user_controller.dart';
 import 'package:react_messenger/utils/colors.dart';
-
-import '../../../models/user.dart';
-import '../../../controller/providers/user_provider.dart';
 import 'widget/comment_card.dart';
 
-class CommentsScreen extends StatefulWidget {
-  final Map<String, dynamic> snap;
+class CommentsScreen extends StatelessWidget {
+  final Map<String, dynamic> postSnapshotComment;
 
-  const CommentsScreen({super.key, required this.snap});
-
-  @override
-  State<CommentsScreen> createState() => _CommentsScreenState();
-}
-
-class _CommentsScreenState extends State<CommentsScreen> {
+  CommentsScreen({super.key, required this.postSnapshotComment});
   final TextEditingController _commentController = TextEditingController();
-  @override
-  void dispose() {
-    _commentController.dispose();
-    super.dispose();
-  }
-
+  final UserController userController = Get.put(UserController());
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<UserProvider>(context).getUser;
-    return Scaffold(
-      backgroundColor: mobileBackgroundColor,
-      appBar: AppBar(
-        title: const Text('Comments'),
-        centerTitle: false,
-      ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('posts')
-            .doc(widget.snap['postId'])
-            .collection('comments')
-            .orderBy(
-              'datePublished',
-              descending: true,
+    return Obx(() {
+      return userController.userData.value == null
+          ? const Center(
+              child: circularProgressIndicator,
             )
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return ListView.builder(
-              itemCount: (snapshot.data!).docs.length,
-              itemBuilder: (context, index) =>
-                  CommentCard(snap: (snapshot.data!).docs[index]));
-        },
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          height: kToolbarHeight,
-          margin:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          padding: const EdgeInsets.only(left: 16, right: 8),
-          child: Row(
-            children: [
-              CircleAvatar(
-                backgroundImage: NetworkImage(user.photoUrl),
-                radius: 18,
+          : Scaffold(
+              backgroundColor: mobileBackgroundColor,
+              appBar: AppBar(
+                title: const Text('Comments'),
+                centerTitle: false,
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 8),
-                  child: TextField(
-                    controller: _commentController,
-                    decoration: InputDecoration(
-                        hintText: 'Comments as ${user.username}',
-                        border: InputBorder.none),
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () async {
-                  await FirestoreMethods().postComments(
-                    widget.snap['postId'],
-                    _commentController.text,
-                    user.uid,
-                    user.username,
-                    user.photoUrl,
+              body: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('posts')
+                    .doc(postSnapshotComment['postId'])
+                    .collection('comments')
+                    .orderBy(
+                      'datePublished',
+                      descending: true,
+                    )
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: (snapshot.data!).docs.length,
+                    itemBuilder: (context, index) => CommentCard(
+                      commentSnapShot: (snapshot.data!).docs[index],
+                      postId: postSnapshotComment['postId'],
+                    ),
                   );
-                  setState(() {
-                    _commentController.text = '';
-                  });
                 },
+              ),
+              bottomNavigationBar: SafeArea(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                  child: const Text(
-                    'Post',
-                    style: TextStyle(color: Colors.blueAccent),
+                  height: kToolbarHeight,
+                  margin: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  padding: const EdgeInsets.only(left: 16, right: 8),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: profilePlaceHolder,
+                        foregroundImage: NetworkImage(
+                            userController.userData.value!.photoUrl),
+                        radius: 18,
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 16, right: 8),
+                          child: TextField(
+                            controller: _commentController,
+                            decoration: InputDecoration(
+                                hintText:
+                                    'Comment as ${userController.userData.value!.username}',
+                                border: InputBorder.none),
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () async {
+                          await FirestoreMethods().postComments(
+                            postSnapshotComment['postId'],
+                            _commentController.text,
+                            userController.userData.value!.uid,
+                            userController.userData.value!.username,
+                            userController.userData.value!.photoUrl,
+                          );
+
+                          _commentController.text = '';
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 8),
+                          child: const Text(
+                            'Post',
+                            style: TextStyle(color: Colors.blueAccent),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+              ),
+            );
+    });
   }
 }

@@ -18,7 +18,7 @@ class ProfileScreen extends StatelessWidget {
       Get.put(ProfileScreenController());
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, [bool mounted = true]) {
     double width = MediaQuery.of(context).size.width;
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
@@ -94,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
                                 ? FollowButton(
                                     function: () async {
                                       await AuthMethods().signOut();
-
+                                      if (!mounted) return;
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                           builder: (context) => LoginScreen(),

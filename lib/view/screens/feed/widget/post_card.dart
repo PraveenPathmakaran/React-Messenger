@@ -7,11 +7,12 @@ import 'package:react_messenger/controller/resources/firestore_methods.dart';
 import 'package:react_messenger/view/screens/comment/comments_screen.dart';
 import 'package:react_messenger/utils/colors.dart';
 
+import '../../../../const/const.dart';
 import '../../../../controller/resources/user_controller.dart';
 
 class PostCard extends StatelessWidget {
-  PostCard({super.key, required this.snap1});
-  final Map<String, dynamic> snap1;
+  PostCard({super.key, required this.postSnapShot});
+  final Map<String, dynamic> postSnapShot;
   final PostController postController = Get.put(PostController());
   final UserController userController = Get.put(UserController());
 
@@ -33,10 +34,13 @@ class PostCard extends StatelessWidget {
                     child: Row(
                       children: [
                         CircleAvatar(
+                          onForegroundImageError: (exception, stackTrace) =>
+                              profilePlaceHolder,
                           radius: 16,
-                          backgroundImage: const AssetImage(
-                              'assets/images/circleProfile.png'),
-                          foregroundImage: NetworkImage(snap1['profImage']),
+                          backgroundImage: profilePlaceHolder,
+                          foregroundImage: NetworkImage(
+                            postSnapShot['profImage'],
+                          ),
                         ),
                         Expanded(
                           child: Padding(
@@ -46,7 +50,7 @@ class PostCard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  snap1['username'],
+                                  postSnapShot['username'],
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -55,45 +59,50 @@ class PostCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        IconButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => Dialog(
-                                        child: ListView(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 16),
-                                            shrinkWrap: true,
-                                            children: [
-                                              InkWell(
-                                                child: const Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 12,
-                                                      horizontal: 16),
-                                                  child: Text('Delete'),
-                                                ),
-                                                onTap: () {
-                                                  FirestoreMethods().deletePost(
-                                                    snap1['postId'],
-                                                  );
-                                                  Navigator.of(context).pop();
-                                                },
-                                              )
-                                            ]),
-                                      ));
-                            },
-                            icon: const Icon(Icons.more_vert))
+                        postSnapShot['uid'] ==
+                                userController.userData.value!.uid
+                            ? IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => Dialog(
+                                      child: ListView(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16),
+                                        shrinkWrap: true,
+                                        children: [
+                                          InkWell(
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 12, horizontal: 16),
+                                              child: Text('Delete'),
+                                            ),
+                                            onTap: () {
+                                              FirestoreMethods().deletePost(
+                                                postSnapShot['postId'],
+                                              );
+                                              Navigator.of(context).pop();
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.more_vert),
+                              )
+                            : const SizedBox()
                       ],
                     ),
                   ),
                   //Image Section
-
+                  kHeight10,
                   GestureDetector(
                     onDoubleTap: () async {
                       await FirestoreMethods().likePost(
-                        snap1['postId'],
+                        postSnapShot['postId'],
                         userController.userData.value!.uid,
-                        snap1['likes'],
+                        postSnapShot['likes'],
                       );
 
                       postController.isLikeAnimating.value = true;
@@ -105,7 +114,7 @@ class PostCard extends StatelessWidget {
                           height: MediaQuery.of(context).size.height * 0.35,
                           width: double.infinity,
                           child: Image.network(
-                            snap1['postUrl'],
+                            postSnapShot['postUrl'],
                             fit: BoxFit.cover,
                             loadingBuilder: (context, child, loadingProgress) {
                               if (loadingProgress == null) return child;
@@ -114,6 +123,8 @@ class PostCard extends StatelessWidget {
                                     "assets/images/placeholder.png"),
                               );
                             },
+                            errorBuilder: (context, error, stackTrace) =>
+                                Image.asset('assets/images/placeholder.png'),
                           ),
                         ),
                         // AnimatedOpacity(
@@ -137,7 +148,7 @@ class PostCard extends StatelessWidget {
                   ),
 
                   //Like comment section
-
+                  kHeight10,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -146,12 +157,12 @@ class PostCard extends StatelessWidget {
                           IconButton(
                               onPressed: () async {
                                 await FirestoreMethods().likePost(
-                                  snap1['postId'],
+                                  postSnapShot['postId'],
                                   userController.userData.value!.uid,
-                                  snap1['likes'],
+                                  postSnapShot['likes'],
                                 );
                               },
-                              icon: snap1['likes'].contains(
+                              icon: postSnapShot['likes'].contains(
                                       userController.userData.value!.uid)
                                   ? const Icon(
                                       Icons.favorite,
@@ -185,26 +196,30 @@ class PostCard extends StatelessWidget {
                           //             )),
                           // ),
 
-                          Text('${snap1['likes'].length}'),
+                          Text('${postSnapShot['likes'].length}'),
                         ],
                       ),
                       Row(
                         children: [
                           IconButton(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
                                   builder: (context) => CommentsScreen(
-                                        snap: snap1,
-                                      )));
+                                    postSnapshotComment: postSnapShot,
+                                  ),
+                                ),
+                              );
                             },
                             icon: const Icon(
                               Icons.comment_outlined,
                             ),
                           ),
+                          //find comment count
                           StreamBuilder(
                               stream: FirebaseFirestore.instance
                                   .collection('posts')
-                                  .doc(snap1['postId'])
+                                  .doc(postSnapShot['postId'])
                                   .collection('comments')
                                   .snapshots(),
                               builder: (BuildContext context,
@@ -241,7 +256,7 @@ class PostCard extends StatelessWidget {
                           style: const TextStyle(color: primaryColor),
                           children: [
                             TextSpan(
-                              text: '${snap1['description']}',
+                              text: '${postSnapShot['description']}',
                             ),
                           ],
                         ),
@@ -254,7 +269,7 @@ class PostCard extends StatelessWidget {
                         children: [
                           Text(
                             DateFormat.yMMMMd()
-                                .format(snap1['datePublished'].toDate()),
+                                .format(postSnapShot['datePublished'].toDate()),
                             style: const TextStyle(
                                 fontSize: 12, color: secondaryColor),
                           ),

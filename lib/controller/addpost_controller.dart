@@ -12,6 +12,7 @@ class AddPostController extends GetxController {
   final Rxn<String> filePath = Rxn<String>();
   final Rx<bool> isLoading = false.obs;
   final Rxn<User> userData = Rxn<User>();
+  final bool mounted = true;
 
   AuthMethods currentUser = AuthMethods();
 
@@ -21,10 +22,6 @@ class AddPostController extends GetxController {
     } catch (e) {
       log(e.toString());
     }
-  }
-
-  void addPath(String path) {
-    filePath.value = path;
   }
 
   selectImage(BuildContext context) async {
@@ -79,6 +76,8 @@ class AddPostController extends GetxController {
         userData.value!.username,
         userData.value!.photoUrl,
       );
+
+      if (!mounted) return; //for removing build context in asynchronous gap
       if (res == 'Success') {
         isLoading.value = false;
         filePath.value = null;
@@ -90,6 +89,10 @@ class AddPostController extends GetxController {
     } catch (e) {
       showSnackBar(e.toString(), context);
     }
+  }
+
+  void addPath(String path) {
+    filePath.value = path;
   }
 
   @override

@@ -1,15 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:react_messenger/const/const.dart';
+import 'package:react_messenger/controller/resources/user_controller.dart';
 
-class CommentCard extends StatefulWidget {
-  final snap;
-  const CommentCard({super.key, required this.snap});
+import '../../../../controller/resources/firestore_methods.dart';
 
-  @override
-  State<CommentCard> createState() => _CommentCardState();
-}
+class CommentCard extends StatelessWidget {
+  final QueryDocumentSnapshot<Map<String, dynamic>> commentSnapShot;
+  final String? postId;
+  final UserController userController = Get.put(UserController());
+  CommentCard({super.key, required this.commentSnapShot, this.postId});
 
-class _CommentCardState extends State<CommentCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -17,7 +20,8 @@ class _CommentCardState extends State<CommentCard> {
       child: Row(
         children: [
           CircleAvatar(
-            backgroundImage: NetworkImage(widget.snap['profilePic']),
+            backgroundImage: profilePlaceHolder,
+            foregroundImage: NetworkImage(commentSnapShot['profilePic']),
             radius: 18,
           ),
           Expanded(
@@ -31,11 +35,11 @@ class _CommentCardState extends State<CommentCard> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: widget.snap['name'],
+                          text: commentSnapShot['name'],
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
-                          text: '    ${widget.snap['text']}',
+                          text: '    ${commentSnapShot['text']}',
                         ),
                       ],
                     ),
@@ -44,7 +48,7 @@ class _CommentCardState extends State<CommentCard> {
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       DateFormat.yMMMd()
-                          .format(widget.snap['datePublished'].toDate()),
+                          .format(commentSnapShot['datePublished'].toDate()),
                       style: const TextStyle(
                           fontSize: 12, fontWeight: FontWeight.w800),
                     ),
@@ -53,6 +57,17 @@ class _CommentCardState extends State<CommentCard> {
               ),
             ),
           ),
+          commentSnapShot['uid'] == userController.userData.value!.uid
+              ? IconButton(
+                  onPressed: () async {
+                    await FirestoreMethods().deleteComment(
+                      postId!,
+                      commentSnapShot['commentId'],
+                    );
+                  },
+                  icon: const Icon(Icons.delete),
+                )
+              : const SizedBox()
         ],
       ),
     );

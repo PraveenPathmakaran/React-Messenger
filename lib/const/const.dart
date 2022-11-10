@@ -17,6 +17,11 @@ const Widget circularProgressIndicator = Center(
     color: Colors.white,
   ),
 );
+
+const AssetImage profilePlaceHolder =
+    AssetImage('assets/images/circleProfile.png');
+
+//
 final ButtonStyle buttonStyle = ButtonStyle(
   backgroundColor: MaterialStateProperty.all(const Color(0xFFAD2DA9)),
   minimumSize: MaterialStateProperty.all(const Size(double.infinity, 45)),

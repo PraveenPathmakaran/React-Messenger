@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:react_messenger/models/posts.dart';
@@ -33,7 +35,9 @@ class FirestoreMethods {
         likes: [],
       );
 
-      _firestore.collection('posts').doc(postId).set(post.toJson());
+      _firestore.collection('posts').doc(postId).set(
+            post.toJson(),
+          );
       res = 'Success';
     } catch (err) {
       res = err.toString();
@@ -41,6 +45,7 @@ class FirestoreMethods {
     return res;
   }
 
+//like post
   Future<void> likePost(String postId, String uid, List likes) async {
     try {
       if (likes.contains(uid)) {
@@ -59,6 +64,7 @@ class FirestoreMethods {
     }
   }
 
+//comment post
   Future<void> postComments(String postId, String text, String uid, String name,
       String profilePic) async {
     try {
@@ -89,6 +95,20 @@ class FirestoreMethods {
     }
   }
 
+  //delete comment
+  Future<void> deleteComment(String postId, String commentId) async {
+    try {
+      await _firestore
+          .collection('posts')
+          .doc(postId)
+          .collection('comments')
+          .doc(commentId)
+          .delete();
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
   //delete post
 
   Future<void> deletePost(String postId) async {
@@ -99,6 +119,7 @@ class FirestoreMethods {
     }
   }
 
+//follow user
   Future<void> followUser(String uid, String followId) async {
     try {
       DocumentSnapshot snap =
