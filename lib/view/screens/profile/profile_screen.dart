@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -113,8 +115,8 @@ class ProfileScreen extends StatelessWidget {
                                     ? FollowButton(
                                         function: () async {
                                           await FirestoreMethods().followUser(
-                                              FirebaseAuth
-                                                  .instance.currentUser!.uid,
+                                              userController
+                                                  .userData.value!.uid,
                                               profileScreenController
                                                   .userData.value['uid']);
 
@@ -129,8 +131,8 @@ class ProfileScreen extends StatelessWidget {
                                     : FollowButton(
                                         function: () async {
                                           await FirestoreMethods().followUser(
-                                              FirebaseAuth
-                                                  .instance.currentUser!.uid,
+                                              userController
+                                                  .userData.value!.uid,
                                               profileScreenController
                                                   .userData.value['uid']);
 

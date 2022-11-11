@@ -100,25 +100,6 @@ class SearchScreen extends StatelessWidget {
   SearchScreen({super.key});
   final SearchController searchController = Get.put(SearchController());
 
-  String name = '';
-  final Rx<bool> isUpdate = false.obs;
-
-  final Rxn<QuerySnapshot<Map<String, dynamic>>> postDocumentList = Rxn();
-  initSearchingPost(String textEntered) async {
-    if (textEntered == '') {
-      return;
-    }
-    postDocumentList.value = await FirebaseFirestore.instance
-        .collection('user')
-        .where(
-          'username',
-          isEqualTo: textEntered,
-        )
-        .get();
-
-    // log(postDocumentList.value!.docs[0].data().toString());
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -140,23 +121,23 @@ class SearchScreen extends StatelessWidget {
                   ),
                   onFieldSubmitted: (String value) {
                     if (value.isEmpty) {
-                      postDocumentList.value = null;
+                      searchController.postDocumentList.value = null;
                       return;
                     }
-                    initSearchingPost(value);
+                    searchController.initSearchingPost(value);
                   },
                   onChanged: (String value) {
                     if (value.isEmpty) {
-                      postDocumentList.value = null;
+                      searchController.postDocumentList.value = null;
                       return;
                     }
-                    name = value;
+                    searchController.name = value;
                   },
                 ),
               ),
               IconButton(
                 onPressed: () {
-                  initSearchingPost(name);
+                  searchController.initSearchingPost(searchController.name);
                 },
                 icon: const Icon(Icons.search),
               )
@@ -165,8 +146,8 @@ class SearchScreen extends StatelessWidget {
         ),
         body: Obx(
           () {
-            if (postDocumentList.value != null) {
-              if (postDocumentList.value!.size == 0) {
+            if (searchController.postDocumentList.value != null) {
+              if (searchController.postDocumentList.value!.size == 0) {
                 return const Center(
                   child: Text('User not found'),
                 );
@@ -176,17 +157,20 @@ class SearchScreen extends StatelessWidget {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
                     return ProfileScreen(
-                        userUid: postDocumentList.value!.docs[0].data()['uid']);
+                        userUid: searchController
+                            .postDocumentList.value!.docs[0]
+                            .data()['uid']);
                   }));
                 },
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundImage: profilePlaceHolder,
-                    foregroundImage: NetworkImage(
-                        postDocumentList.value!.docs[0].data()['photoUrl']),
+                    foregroundImage: NetworkImage(searchController
+                        .postDocumentList.value!.docs[0]
+                        .data()['photoUrl']),
                   ),
-                  title:
-                      Text(postDocumentList.value!.docs[0].data()['username']),
+                  title: Text(searchController.postDocumentList.value!.docs[0]
+                      .data()['username']),
                 ),
               );
             } else {

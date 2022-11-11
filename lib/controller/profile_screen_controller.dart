@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/controller/resources/user_controller.dart';
 import 'package:react_messenger/utils/utils.dart';
 
 class ProfileScreenController extends GetxController {
@@ -18,10 +17,11 @@ class ProfileScreenController extends GetxController {
 
       DocumentSnapshot userSnap =
           await FirebaseFirestore.instance.collection('user').doc(uid).get();
+
       //get Post length
       var postSnap = await FirebaseFirestore.instance
           .collection('posts')
-          .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where('uid', isEqualTo: uid)
           .get();
       postLength = postSnap.docs.length;
       userData.value = userSnap.data()! as Map<dynamic, dynamic>;
@@ -34,10 +34,5 @@ class ProfileScreenController extends GetxController {
     }
 
     isLoading.value = false;
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
   }
 }
