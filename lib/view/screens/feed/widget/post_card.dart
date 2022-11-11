@@ -231,7 +231,10 @@ class PostCard extends StatelessWidget {
                                   return const Text('');
                                 }
                                 return Text(
-                                  (snapshot.data!.docs.length).toString(),
+                                  (snapshot.data!.docs.isNotEmpty
+                                          ? snapshot.data!.docs.length
+                                          : '')
+                                      .toString(),
                                 );
                               })
                         ],

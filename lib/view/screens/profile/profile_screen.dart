@@ -11,12 +11,14 @@ import 'package:react_messenger/view/screens/login/login_screen.dart';
 import 'package:react_messenger/utils/colors.dart';
 import 'package:react_messenger/view/screens/profile/widget/follow_button.dart';
 
+import '../../../controller/resources/user_controller.dart';
+
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key, required this.userUid});
   final String userUid;
   final ProfileScreenController profileScreenController =
       Get.put(ProfileScreenController());
-
+  final UserController userController = Get.put(UserController());
   @override
   Widget build(BuildContext context, [bool mounted = true]) {
     double width = MediaQuery.of(context).size.width;
@@ -27,7 +29,8 @@ class ProfileScreen extends StatelessWidget {
     );
     return Obx(() {
       return profileScreenController.isLoading.value ||
-              profileScreenController.userData.value == null
+              profileScreenController.userData.value == null ||
+              userController.userData.value == null
           ? const Center(
               child: CircularProgressIndicator(),
             )
@@ -46,8 +49,9 @@ class ProfileScreen extends StatelessWidget {
                           backgroundColor: Colors.grey,
                           backgroundImage: const AssetImage(
                               'assets/images/circleProfile.png'),
-                          foregroundImage: NetworkImage(profileScreenController
-                              .userData.value['photoUrl']),
+                          foregroundImage: NetworkImage(
+                            profileScreenController.userData.value['photoUrl'],
+                          ),
                           radius: 80,
                         ),
                         //Username
@@ -90,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            FirebaseAuth.instance.currentUser!.uid == userUid
+                            userController.userData.value!.uid == userUid
                                 ? FollowButton(
                                     function: () async {
                                       await AuthMethods().signOut();
@@ -140,9 +144,7 @@ class ProfileScreen extends StatelessWidget {
                                         textColor: Colors.white)
                           ],
                         ),
-
                         //Gridview
-
                         const Divider(),
                         FutureBuilder(
                             future: FirebaseFirestore.instance

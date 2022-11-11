@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:react_messenger/const/const.dart';
 import 'package:react_messenger/controller/addpost_controller.dart';
-import 'package:react_messenger/controller/resources/storage_methods.dart';
 
 class AddPostScreen extends StatelessWidget {
   AddPostScreen({super.key});

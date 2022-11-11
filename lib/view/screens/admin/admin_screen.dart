@@ -21,14 +21,14 @@ class AdminScreen extends StatelessWidget {
               subtitle: const Text('data'),
               trailing: Row(mainAxisSize: MainAxisSize.min, children: [
                 ElevatedButton(onPressed: () {}, child: const Text('Remove')),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 ElevatedButton(onPressed: () {}, child: const Text('Block'))
               ]),
             );
           },
-          separatorBuilder: (context, index) => SizedBox(),
+          separatorBuilder: (context, index) => const SizedBox(),
           itemCount: 10),
     );
   }

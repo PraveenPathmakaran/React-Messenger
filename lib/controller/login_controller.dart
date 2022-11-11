@@ -36,10 +36,11 @@ class LoginController extends GetxController {
     final String result = await AuthMethods().googleLogin();
     if (!mounted) return;
     if (result == 'Success') {
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (context) {
-        return const MobileScreenLayout();
-      }));
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute<Widget>(
+            builder: (BuildContext context) => const MobileScreenLayout(),
+          ),
+          (Route<dynamic> route) => false);
     } else {
       showSnackBar(result, context);
     }

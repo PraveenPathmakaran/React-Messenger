@@ -4,8 +4,6 @@ import 'package:lottie/lottie.dart';
 import 'package:react_messenger/controller/login_controller.dart';
 import 'package:react_messenger/controller/resources/auth_methods.dart';
 import 'package:react_messenger/utils/colors.dart';
-import 'package:react_messenger/utils/utils.dart';
-import 'package:react_messenger/view/screens/home/home_screen.dart';
 import '../../../const/const.dart';
 import '../../widgets/login_bottom_container.dart';
 import '../../widgets/text_field_input.dart';
@@ -81,7 +79,7 @@ class LoginScreen extends StatelessWidget {
                   Obx(() {
                     return GestureDetector(
                       onTap: () async {
-                        loginController.googleSignup(context);
+                        await loginController.googleSignup(context);
                       },
                       child: loginController.gIsLoading.value
                           ? circularProgressIndicator

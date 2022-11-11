@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:react_messenger/controller/resources/user_controller.dart';
 import 'package:react_messenger/utils/utils.dart';
 
 class ProfileScreenController extends GetxController {
@@ -33,5 +34,10 @@ class ProfileScreenController extends GetxController {
     }
 
     isLoading.value = false;
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
   }
 }
