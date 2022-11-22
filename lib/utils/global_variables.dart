@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:react_messenger/view/screens/addpost/add_post_screen.dart';
 import 'package:react_messenger/view/screens/chat/chatlist_screen.dart';
@@ -13,8 +12,8 @@ List<Widget> homeScreenItems = [
   FeedScreen(),
   SearchScreen(),
   AddPostScreen(),
-  const ChatListScreen(),
+  ChatListScreen(),
   ProfileScreen(
-    userUid: FirebaseAuth.instance.currentUser!.uid,
+    currentUser: true,
   ),
 ];

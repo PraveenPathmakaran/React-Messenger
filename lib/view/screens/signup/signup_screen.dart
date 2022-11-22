@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
+import 'package:react_messenger/controller/login_controller.dart';
 import 'package:react_messenger/controller/signup_controller.dart';
 import '../../../const/const.dart';
-import '../../../utils/colors.dart';
 import '../../../utils/utils.dart';
+import '../../../widgets/widgets.dart';
 import '../../widgets/login_bottom_container.dart';
 import '../../widgets/text_field_input.dart';
 
 class SignUpScreen extends StatelessWidget {
   SignUpScreen({super.key});
   final SignUpController signUpController = Get.put(SignUpController());
+  final LoginController loginController = Get.put(LoginController());
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -25,7 +27,7 @@ class SignUpScreen extends StatelessWidget {
               Column(
                 children: <Widget>[
                   //Heading
-                  kHeight50,
+                  kHeight25,
                   Image(
                     image: const AssetImage('assets/images/logo.png'),
                     height: width * .25,
@@ -66,7 +68,7 @@ class SignUpScreen extends StatelessWidget {
                     );
                   }),
 
-                  kHeight25,
+                  kHeight10,
                   //text field input for email
                   TextFieldInput(
                     textEditingController: signUpController.emailController,
@@ -75,7 +77,7 @@ class SignUpScreen extends StatelessWidget {
                     label: 'Email',
                     icon: Icons.email,
                   ),
-                  kHeight25,
+                  kHeight10,
 
                   TextFieldInput(
                     textEditingController: signUpController.usernameController,
@@ -84,7 +86,7 @@ class SignUpScreen extends StatelessWidget {
                     label: 'Username',
                     icon: Icons.manage_accounts_rounded,
                   ),
-                  kHeight25,
+                  kHeight10,
                   //text field input for password
                   TextFieldInput(
                     textEditingController: signUpController.passwordController,
@@ -94,7 +96,7 @@ class SignUpScreen extends StatelessWidget {
                     label: 'Password',
                     icon: Icons.lock,
                   ),
-                  kHeight25,
+                  kHeight10,
                   TextFieldInput(
                     textEditingController:
                         signUpController.conformPasswordController,
@@ -114,13 +116,24 @@ class SignUpScreen extends StatelessWidget {
                       style: buttonStyle,
                       child: Obx(() {
                         return signUpController.isLoading.value
-                            ? const Center(
-                                child: CircularProgressIndicator(
-                                color: primaryColor,
-                              ))
+                            ? circularProgressIndicator
                             : const Text('SignUp');
                       })),
-                  kHeight25,
+                  kHeight10,
+                  const LoginBottomContainer(title: 'Or sign in with'),
+                  Obx(() {
+                    return GestureDetector(
+                      onTap: () async {
+                        await loginController.googleSignup();
+                      },
+                      child: loginController.gIsLoading.value
+                          ? circularProgressIndicator
+                          : const Image(
+                              width: 40,
+                              image: AssetImage('assets/images/google.png'),
+                            ),
+                    );
+                  }),
                   //transition to signing up
                   Column(
                     children: [
@@ -130,7 +143,10 @@ class SignUpScreen extends StatelessWidget {
                           const LoginBottomContainer(
                               title: 'Already have account ? '),
                           GestureDetector(
-                              onTap: () => Navigator.of(context).pop(),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                signUpController.clearFieled();
+                              },
                               child: const LoginBottomContainer(
                                 title: 'Login',
                                 fontWeight: FontWeight.bold,

@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:react_messenger/models/posts.dart';
-import 'package:react_messenger/controller/resources/storage_methods.dart';
+import 'package:react_messenger/services/storage_methods.dart';
 import 'package:uuid/uuid.dart';
 
 class FirestoreMethods {
@@ -123,21 +123,22 @@ class FirestoreMethods {
   Future<void> followUser(String uid, String followId) async {
     try {
       DocumentSnapshot snap =
-          await _firestore.collection('users').doc(uid).get();
-      List following = (snap.data() as dynamic)['following'];
+          await _firestore.collection('user').doc(uid).get();
+
+      List following = (snap.data() as Map<String, dynamic>)['following'];
 
       if (following.contains(followId)) {
-        await _firestore.collection('users').doc(followId).update({
+        await _firestore.collection('user').doc(followId).update({
           'followers': FieldValue.arrayRemove([uid])
         });
-        await _firestore.collection('users').doc(uid).update({
+        await _firestore.collection('user').doc(uid).update({
           'following': FieldValue.arrayRemove([followId])
         });
       } else {
-        await _firestore.collection('users').doc(followId).update({
+        await _firestore.collection('user').doc(followId).update({
           'followers': FieldValue.arrayUnion([uid])
         });
-        await _firestore.collection('users').doc(uid).update({
+        await _firestore.collection('user').doc(uid).update({
           'following': FieldValue.arrayUnion([followId])
         });
       }

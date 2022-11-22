@@ -1,29 +1,20 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:react_messenger/controller/resources/auth_methods.dart';
-import 'package:react_messenger/controller/resources/firestore_methods.dart';
+import 'package:react_messenger/controller/user_controller.dart';
+import 'package:react_messenger/services/auth_methods.dart';
+import 'package:react_messenger/services/firestore_methods.dart';
 import 'package:react_messenger/utils/utils.dart';
-import '../models/user.dart';
 
 class AddPostController extends GetxController {
   final Rxn<String> filePath = Rxn<String>();
   final Rx<bool> isLoading = false.obs;
-  final Rxn<User> userData = Rxn<User>();
+
   final bool mounted = true;
   Rx<double> progress = 0.0.obs;
 
   AuthMethods currentUser = AuthMethods();
-
-  Future<void> getUser() async {
-    try {
-      userData.value = await currentUser.getUserDetails();
-    } catch (e) {
-      log(e.toString());
-    }
-  }
+  final UserController userController = Get.put(UserController());
 
   selectImage(BuildContext context) async {
     return showDialog(
@@ -73,9 +64,9 @@ class AddPostController extends GetxController {
       String res = await FirestoreMethods().uploadPost(
         description,
         filePath.value!,
-        userData.value!.uid,
-        userData.value!.username,
-        userData.value!.photoUrl,
+        userController.userData.value!.uid,
+        userController.userData.value!.username,
+        userController.userData.value!.photoUrl,
       );
 
       if (!mounted) return; //for removing build context in asynchronous gap
@@ -94,11 +85,5 @@ class AddPostController extends GetxController {
 
   void addPath(String path) {
     filePath.value = path;
-  }
-
-  @override
-  void onInit() {
-    getUser();
-    super.onInit();
   }
 }

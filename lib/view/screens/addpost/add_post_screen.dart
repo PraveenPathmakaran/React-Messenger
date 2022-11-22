@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:react_messenger/const/const.dart';
 import 'package:react_messenger/controller/addpost_controller.dart';
+import 'package:react_messenger/controller/user_controller.dart';
+
+import '../../../widgets/widgets.dart';
 
 class AddPostScreen extends StatelessWidget {
   AddPostScreen({super.key});
@@ -11,6 +14,7 @@ class AddPostScreen extends StatelessWidget {
   final TextEditingController textController = TextEditingController();
 
   final AddPostController addPostController = Get.put(AddPostController());
+  final UserController userController = Get.put(UserController());
 
   @override
   Widget build(BuildContext context) {
@@ -104,9 +108,7 @@ class AddPostScreen extends StatelessWidget {
                               ),
                             ),
                             //add post button
-                            const SizedBox(
-                              height: 20,
-                            ),
+                            kHeight25,
                             ElevatedButton(
                               style: buttonStyle.copyWith(
                                 minimumSize:
@@ -121,9 +123,7 @@ class AddPostScreen extends StatelessWidget {
                               },
                               child: const Text('Add Post'),
                             ),
-                            const SizedBox(
-                              height: 20,
-                            ),
+                            kHeight25,
                             ElevatedButton(
                               style: buttonStyle.copyWith(
                                 minimumSize:

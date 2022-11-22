@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:react_messenger/utils/colors.dart';
+import 'package:react_messenger/const/colors.dart';
 import 'package:react_messenger/view/screens/feed/widget/post_card.dart';
+import 'package:react_messenger/widgets/widgets.dart';
 
 class FeedScreen extends StatelessWidget {
   FeedScreen({super.key});
@@ -10,18 +11,18 @@ class FeedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: mobileBackgroundColor,
-          centerTitle: false,
-          title: const Text('React Messenger')),
+      appBar: const AppBarWidget(
+        title: 'React Messenger',
+        centerTitle: false,
+        backgroundColor: lightDarColor,
+        elevation: 0,
+      ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('posts').snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return circularProgressIndicator;
           }
           return SingleChildScrollView(
             child: Column(
@@ -35,7 +36,7 @@ class FeedScreen extends StatelessWidget {
                   ),
                   separatorBuilder: (context, index) {
                     return const Divider(
-                      thickness: 2,
+                      color: mobileBackgroundColor,
                     );
                   },
                 ),

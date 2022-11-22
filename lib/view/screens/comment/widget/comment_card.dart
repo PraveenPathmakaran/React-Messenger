@@ -2,10 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:react_messenger/const/const.dart';
-import 'package:react_messenger/controller/resources/user_controller.dart';
-
-import '../../../../controller/resources/firestore_methods.dart';
+import 'package:react_messenger/controller/user_controller.dart';
+import '../../../../services/firestore_methods.dart';
+import '../../../../widgets/widgets.dart';
 
 class CommentCard extends StatelessWidget {
   final QueryDocumentSnapshot<Map<String, dynamic>> commentSnapShot;
@@ -19,9 +18,8 @@ class CommentCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundImage: profilePlaceHolder,
-            foregroundImage: NetworkImage(commentSnapShot['profilePic']),
+          CircleAvatarWidget(
+            networkImagePath: commentSnapShot['profilePic'],
             radius: 18,
           ),
           Expanded(
@@ -39,7 +37,7 @@ class CommentCard extends StatelessWidget {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
-                          text: '    ${commentSnapShot['text']}',
+                          text: '\n${commentSnapShot['text']}',
                         ),
                       ],
                     ),
@@ -58,14 +56,18 @@ class CommentCard extends StatelessWidget {
             ),
           ),
           commentSnapShot['uid'] == userController.userData.value!.uid
-              ? IconButton(
-                  onPressed: () async {
-                    await FirestoreMethods().deleteComment(
-                      postId!,
-                      commentSnapShot['commentId'],
-                    );
-                  },
-                  icon: const Icon(Icons.delete),
+              ? Column(
+                  children: [
+                    IconButton(
+                      onPressed: () async {
+                        await FirestoreMethods().deleteComment(
+                          postId!,
+                          commentSnapShot['commentId'],
+                        );
+                      },
+                      icon: const Icon(Icons.delete),
+                    ),
+                  ],
                 )
               : const SizedBox()
         ],

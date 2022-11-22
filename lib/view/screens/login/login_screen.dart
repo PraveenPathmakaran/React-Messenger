@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:react_messenger/controller/login_controller.dart';
-import 'package:react_messenger/controller/resources/auth_methods.dart';
-import 'package:react_messenger/utils/colors.dart';
+import 'package:react_messenger/widgets/widgets.dart';
 import '../../../const/const.dart';
 import '../../widgets/login_bottom_container.dart';
 import '../../widgets/text_field_input.dart';
@@ -11,11 +10,7 @@ import '../signup/signup_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
-
   final LoginController loginController = Get.put(LoginController());
-  final AuthMethods authMethods = AuthMethods();
-  final bool mounted = true;
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -60,7 +55,9 @@ class LoginScreen extends StatelessWidget {
                     label: 'Password',
                     icon: Icons.lock,
                   ),
+
                   kHeight25,
+
                   ElevatedButton(
                       onPressed: () async {
                         await loginController.loginUser(context);
@@ -68,18 +65,15 @@ class LoginScreen extends StatelessWidget {
                       style: buttonStyle,
                       child: Obx(() {
                         return loginController.isLoading.value
-                            ? const Center(
-                                child: CircularProgressIndicator(
-                                color: primaryColor,
-                              ))
+                            ? circularProgressIndicator
                             : const Text('Log In');
                       })),
                   kHeight25,
-                  const LoginBottomContainer(title: 'Or sign in with'),
+                  const LoginBottomContainer(title: 'Or login in with'),
                   Obx(() {
                     return GestureDetector(
                       onTap: () async {
-                        await loginController.googleSignup(context);
+                        await loginController.googleLogin(context);
                       },
                       child: loginController.gIsLoading.value
                           ? circularProgressIndicator

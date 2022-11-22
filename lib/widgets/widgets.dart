@@ -1,0 +1,90 @@
+import 'package:flutter/material.dart';
+
+const Widget kHeight50 = SizedBox(
+  height: 50,
+);
+const Widget kHeight25 = SizedBox(
+  height: 25,
+);
+const Widget kHeight10 = SizedBox(
+  height: 10,
+);
+const Widget kWidth15 = SizedBox(
+  width: 15,
+);
+const Widget circularProgressIndicator = Center(
+  child: CircularProgressIndicator(
+    color: Colors.white,
+  ),
+);
+
+const AssetImage profilePlaceHolder =
+    AssetImage('assets/images/circleProfile.png');
+
+class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
+  const AppBarWidget({
+    super.key,
+    required this.title,
+    required this.centerTitle,
+    required this.backgroundColor,
+    required this.elevation,
+  });
+  final String title;
+  final bool centerTitle;
+  final Color backgroundColor;
+  final double elevation;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title),
+      centerTitle: centerTitle,
+      backgroundColor: backgroundColor,
+      elevation: elevation,
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(60);
+}
+
+class TitleWidget extends StatelessWidget {
+  const TitleWidget({
+    super.key,
+    required this.title,
+  });
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 25,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+}
+
+//circle avatar
+class CircleAvatarWidget extends StatelessWidget {
+  const CircleAvatarWidget(
+      {Key? key, required this.networkImagePath, this.radius = 20})
+      : super(key: key);
+
+  final String networkImagePath;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: radius,
+      onForegroundImageError: (exception, stackTrace) => profilePlaceHolder,
+      backgroundImage: profilePlaceHolder,
+      foregroundImage: NetworkImage(
+        networkImagePath,
+      ),
+    );
+  }
+}

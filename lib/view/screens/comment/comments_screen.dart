@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/const/const.dart';
-import 'package:react_messenger/controller/resources/firestore_methods.dart';
-import 'package:react_messenger/controller/resources/user_controller.dart';
-import 'package:react_messenger/utils/colors.dart';
+import 'package:react_messenger/services/firestore_methods.dart';
+import 'package:react_messenger/controller/user_controller.dart';
+import 'package:react_messenger/const/colors.dart';
+import '../../../widgets/widgets.dart';
 import 'widget/comment_card.dart';
 
 class CommentsScreen extends StatelessWidget {
@@ -22,10 +22,11 @@ class CommentsScreen extends StatelessWidget {
             )
           : Scaffold(
               backgroundColor: mobileBackgroundColor,
-              appBar: AppBar(
-                title: const Text('Comments'),
-                centerTitle: false,
-              ),
+              appBar: const AppBarWidget(
+                  title: 'Comments',
+                  centerTitle: false,
+                  backgroundColor: lightDarColor,
+                  elevation: 0),
               body: StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('posts')
@@ -38,9 +39,7 @@ class CommentsScreen extends StatelessWidget {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return circularProgressIndicator;
                   }
                   return ListView.builder(
                     itemCount: (snapshot.data!).docs.length,
@@ -53,16 +52,19 @@ class CommentsScreen extends StatelessWidget {
               ),
               bottomNavigationBar: SafeArea(
                 child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: lightDarColor,
+                  ),
                   height: kToolbarHeight,
                   margin: EdgeInsets.only(
                       bottom: MediaQuery.of(context).viewInsets.bottom),
                   padding: const EdgeInsets.only(left: 16, right: 8),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        backgroundImage: profilePlaceHolder,
-                        foregroundImage: NetworkImage(
-                            userController.userData.value!.photoUrl),
+                      CircleAvatarWidget(
+                        networkImagePath:
+                            userController.userData.value!.photoUrl,
                         radius: 18,
                       ),
                       Expanded(
@@ -94,7 +96,9 @@ class CommentsScreen extends StatelessWidget {
                               vertical: 8, horizontal: 8),
                           child: const Text(
                             'Post',
-                            style: TextStyle(color: Colors.blueAccent),
+                            style: TextStyle(
+                                color: Colors.blueAccent,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       )

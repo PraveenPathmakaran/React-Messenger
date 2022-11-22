@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
-import 'package:react_messenger/controller/resources/auth_methods.dart';
+import 'package:react_messenger/services/auth_methods.dart';
 
-import '../../models/user.dart';
+import '../models/user.dart';
 
 class UserController extends GetxController {
   final Rxn<User> userData = Rxn<User>();
@@ -13,7 +13,7 @@ class UserController extends GetxController {
     try {
       userData.value = await currentUser.getUserDetails();
     } catch (e) {
-      log(e.toString());
+      log('userController ${e.toString()}');
     }
   }
 

@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 Future<String> pickImage(ImageSource source) async {
   final ImagePicker imagePicker = ImagePicker();
   try {
-    XFile? file = await imagePicker.pickImage(source: source, imageQuality: 30);
+    XFile? file = await imagePicker.pickImage(source: source, imageQuality: 10);
 
     if (file != null) {
       String imagePath = await cropImage(imageFile: file.path);
@@ -29,6 +29,29 @@ void showSnackBar(String content, BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(content),
+    ),
+  );
+}
+
+showImageAlert(String path, BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => SizedBox(
+      child: AlertDialog(
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.close)),
+        ],
+        backgroundColor: Colors.transparent,
+        content: Image.network(
+          path,
+          fit: BoxFit.cover,
+        ),
+      ),
     ),
   );
 }

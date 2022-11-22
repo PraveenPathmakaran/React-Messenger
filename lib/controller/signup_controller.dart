@@ -1,11 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:react_messenger/controller/profile_screen_controller.dart';
+import 'package:react_messenger/controller/user_controller.dart';
 import 'package:react_messenger/utils/utils.dart';
 import 'package:react_messenger/view/screens/home/home_screen.dart';
 import '../view/screens/login/login_screen.dart';
-import 'resources/auth_methods.dart';
+import '../services/auth_methods.dart';
 
 class SignUpController extends GetxController {
   final TextEditingController emailController = TextEditingController();
@@ -13,28 +13,48 @@ class SignUpController extends GetxController {
   final TextEditingController conformPasswordController =
       TextEditingController();
   final TextEditingController usernameController = TextEditingController();
+  final TextEditingController bioController = TextEditingController();
+  final AuthMethods authMethods = AuthMethods();
+  final UserController userController = Get.put(UserController());
+  final ProfileScreenController profileScreenController =
+      Get.put(ProfileScreenController());
   Rxn<String> image = Rxn();
   Rx<bool> isLoading = false.obs;
-  bool mounted = true;
+  bool mounted = true; //lint remove
   Future<void> signUpUser(BuildContext context) async {
     if (emailController.text.isEmpty ||
         passwordController.text.isEmpty ||
         usernameController.text.isEmpty ||
         image.value == null) {
+      //image validation
       if (image.value == null) {
         showSnackBar('Please add a profile image', context);
         return;
       }
+
+      //email validation
+      final bool emailValid = RegExp(
+              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+          .hasMatch(emailController.text);
+
+      if (!emailValid) {
+        return showSnackBar('Enter a valid email address', context);
+      }
+
       showSnackBar('All fileds are mandatory', context);
       return;
     }
+
     if (passwordController.text != conformPasswordController.text) {
       showSnackBar('Password doest not match', context);
+      if (passwordController.text.length < 6) {
+        showSnackBar('Password length should be 6', context);
+      }
       return;
     }
 
     isLoading.value = true;
-    final String res = await AuthMethods().signUpUser(
+    final String res = await authMethods.signUpUser(
       email: emailController.text,
       rePassword: conformPasswordController.text,
       username: usernameController.text,
@@ -64,8 +84,6 @@ class SignUpController extends GetxController {
             'The email address is already in use by another account', context);
         return;
       }
-
-      log(res.toString());
       showSnackBar(res, context);
     } else {
       Navigator.of(context).pushAndRemoveUntil(
@@ -84,11 +102,31 @@ class SignUpController extends GetxController {
         builder: (BuildContext context) => LoginScreen(),
       ),
     );
+    clearFieled();
+  }
+
+  void clearFieled() {
     emailController.clear();
     passwordController.clear();
     usernameController.clear();
     conformPasswordController.clear();
     image.value = null;
+  }
+
+  Future<void> updateUserController(String userId, BuildContext context) async {
+    isLoading.value = true;
+    final result = await authMethods.updateUser(
+        username: usernameController.text,
+        bio: bioController.text,
+        userId: userId,
+        file: image.value);
+    if (result == 'success') {
+      userController.getUser();
+      profileScreenController.getData(context: context, uid: userId);
+
+      Get.back();
+      isLoading.value = false;
+    }
   }
 
   @override
@@ -97,6 +135,7 @@ class SignUpController extends GetxController {
     passwordController.dispose();
     conformPasswordController.dispose();
     usernameController.dispose();
+    image.value = null;
     super.onClose();
   }
 }

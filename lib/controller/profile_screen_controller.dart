@@ -8,8 +8,8 @@ class ProfileScreenController extends GetxController {
   Rx<bool> isLoading = false.obs;
   Rxn<dynamic> userData = Rxn<Map<dynamic, dynamic>>();
   int postLength = 0;
-  int followers = 0;
-  int following = 0;
+  Rx<int> followers = 0.obs;
+  Rx<int> following = 0.obs;
   bool isFollowing = false;
   getData({required BuildContext context, required String uid}) async {
     try {
@@ -25,8 +25,8 @@ class ProfileScreenController extends GetxController {
           .get();
       postLength = postSnap.docs.length;
       userData.value = userSnap.data()! as Map<dynamic, dynamic>;
-      followers = userData.value['followers'].length;
-      following = userData.value['following'].length;
+      followers.value = userData.value['followers'].length;
+      following.value = userData.value['following'].length;
       isFollowing = userData.value['followers']
           .contains(FirebaseAuth.instance.currentUser!.uid);
     } catch (e) {

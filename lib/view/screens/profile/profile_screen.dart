@@ -1,28 +1,32 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/const/const.dart';
 import 'package:react_messenger/controller/profile_screen_controller.dart';
-import 'package:react_messenger/controller/resources/auth_methods.dart';
-import 'package:react_messenger/controller/resources/firestore_methods.dart';
+import 'package:react_messenger/services/auth_methods.dart';
+import 'package:react_messenger/services/firestore_methods.dart';
+import 'package:react_messenger/view/screens/feed/widget/post_card.dart';
 import 'package:react_messenger/view/screens/login/login_screen.dart';
 
-import 'package:react_messenger/utils/colors.dart';
+import 'package:react_messenger/const/colors.dart';
 import 'package:react_messenger/view/screens/profile/widget/follow_button.dart';
+import 'package:react_messenger/view/screens/update/update_screen.dart';
 
-import '../../../controller/resources/user_controller.dart';
+import '../../../controller/user_controller.dart';
+import '../../../widgets/widgets.dart';
 
 class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key, required this.userUid});
-  final String userUid;
+  ProfileScreen({super.key, this.userUid = '', this.currentUser = false});
+  String userUid = '';
+  bool currentUser = false;
   final ProfileScreenController profileScreenController =
       Get.put(ProfileScreenController());
   final UserController userController = Get.put(UserController());
   @override
   Widget build(BuildContext context, [bool mounted = true]) {
+    if (currentUser && userController.userData.value != null) {
+      userUid = userController.userData.value!.uid;
+    }
+
     double width = MediaQuery.of(context).size.width;
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
@@ -32,11 +36,16 @@ class ProfileScreen extends StatelessWidget {
     return Obx(() {
       return profileScreenController.isLoading.value ||
               profileScreenController.userData.value == null ||
-              userController.userData.value == null
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
+              userController.userData.value == null ||
+              userUid == ''
+          ? circularProgressIndicator
           : Scaffold(
+              appBar: const AppBarWidget(
+                title: '',
+                centerTitle: false,
+                backgroundColor: mobileBackgroundColor,
+                elevation: 0,
+              ),
               body: SafeArea(
                 child: SingleChildScrollView(
                   child: Container(
@@ -47,15 +56,33 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         kHeight25,
                         //Circle Avatar
-                        CircleAvatar(
-                          backgroundColor: Colors.grey,
-                          backgroundImage: const AssetImage(
-                              'assets/images/circleProfile.png'),
-                          foregroundImage: NetworkImage(
-                            profileScreenController.userData.value['photoUrl'],
+
+                        Stack(alignment: Alignment.bottomRight, children: [
+                          CircleAvatarWidget(
+                            networkImagePath: profileScreenController
+                                .userData.value['photoUrl'],
+                            radius: 80,
                           ),
-                          radius: 80,
-                        ),
+                          currentUser
+                              ? IconButton(
+                                  onPressed: () {
+                                    Get.to(() => UpdateScreen(
+                                          profileUrl: profileScreenController
+                                              .userData.value['photoUrl'],
+                                          username: profileScreenController
+                                              .userData.value['username'],
+                                          bio: profileScreenController
+                                              .userData.value['bio'],
+                                          userId: userUid,
+                                        ));
+                                  },
+                                  icon: const Icon(
+                                    Icons.edit_note_outlined,
+                                    size: 40,
+                                  ))
+                              : const SizedBox()
+                        ]),
+
                         //Username
                         Container(
                           padding: const EdgeInsets.only(top: 15),
@@ -67,12 +94,12 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         kHeight10,
                         //About
-                        // Container(
-                        //   padding: const EdgeInsets.only(top: 1),
-                        //   child: Text(
-                        //     profileScreenController.userData.value['fullname'],
-                        //   ),
-                        // ),
+                        Container(
+                          padding: const EdgeInsets.only(top: 1),
+                          child: Text(
+                            profileScreenController.userData.value['bio'],
+                          ),
+                        ),
                         kHeight25,
 
                         //follow following post row
@@ -84,11 +111,15 @@ class ProfileScreen extends StatelessWidget {
                             buildStatColumn(profileScreenController.postLength,
                                 'Posts', width),
                             kWidth15,
-                            buildStatColumn(profileScreenController.followers,
-                                'Followers', width),
+                            buildStatColumn(
+                                profileScreenController.followers.value,
+                                'Followers',
+                                width),
                             kWidth15,
-                            buildStatColumn(profileScreenController.following,
-                                'Following', width),
+                            buildStatColumn(
+                                profileScreenController.following.value,
+                                'Following',
+                                width),
                             kWidth15,
                           ],
                         ),
@@ -122,7 +153,8 @@ class ProfileScreen extends StatelessWidget {
 
                                           profileScreenController.isFollowing =
                                               false;
-                                          profileScreenController.followers--;
+                                          profileScreenController
+                                              .followers.value--;
                                         },
                                         backgroundColor: Colors.white,
                                         borderColor: Colors.grey,
@@ -138,7 +170,8 @@ class ProfileScreen extends StatelessWidget {
 
                                           profileScreenController.isFollowing =
                                               true;
-                                          profileScreenController.followers++;
+                                          profileScreenController
+                                              .followers.value++;
                                         },
                                         backgroundColor: Colors.blue,
                                         borderColor: Colors.blue,
@@ -156,9 +189,7 @@ class ProfileScreen extends StatelessWidget {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
+                                return circularProgressIndicator;
                               }
 
                               return GridView.builder(
@@ -174,11 +205,35 @@ class ProfileScreen extends StatelessWidget {
                                 itemBuilder: (context, index) {
                                   DocumentSnapshot snap =
                                       (snapshot.data! as dynamic).docs[index];
-                                  return Image(
-                                    image: NetworkImage(
-                                      (snap.data()! as dynamic)['postUrl'],
+                                  return GestureDetector(
+                                    //this detector for post list view current user
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ProfileUsersFeed(
+                                                userData: userUid,
+                                              )),
                                     ),
-                                    fit: BoxFit.cover,
+                                    child: Image(
+                                      image: NetworkImage(
+                                        (snap.data()! as dynamic)['postUrl'],
+                                      ),
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return Center(
+                                          child: Image.asset(
+                                              "assets/images/placeholder.png"),
+                                        );
+                                      },
+                                      errorBuilder: (context, error,
+                                              stackTrace) =>
+                                          Image.asset(
+                                              'assets/images/placeholder.png'),
+                                    ),
                                   );
                                 },
                               );
@@ -220,6 +275,55 @@ class ProfileScreen extends StatelessWidget {
           ),
         )
       ],
+    );
+  }
+}
+
+class ProfileUsersFeed extends StatelessWidget {
+  ProfileUsersFeed({super.key, required this.userData});
+  final ScrollController scrollController = ScrollController();
+  final String userData;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const AppBarWidget(
+        title: '',
+        centerTitle: false,
+        backgroundColor: mobileBackgroundColor,
+        elevation: 0,
+      ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('posts')
+            .where('uid', isEqualTo: userData)
+            .snapshots(),
+        builder: (context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return circularProgressIndicator;
+          }
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                ListView.separated(
+                  controller: scrollController,
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) => PostCard(
+                    postSnapShot: snapshot.data!.docs[index].data(),
+                  ),
+                  separatorBuilder: (context, index) {
+                    return const Divider(
+                      thickness: 2,
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
