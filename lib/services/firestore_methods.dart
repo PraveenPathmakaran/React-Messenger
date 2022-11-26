@@ -3,11 +3,14 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:react_messenger/models/posts.dart';
+import 'package:react_messenger/models/report.dart';
 import 'package:react_messenger/services/storage_methods.dart';
 import 'package:uuid/uuid.dart';
 
 class FirestoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final StorageMethods storageMethods = StorageMethods();
+  String imageId = '';
 //upload post
   Future<String> uploadPost(
     String description,
@@ -18,21 +21,24 @@ class FirestoreMethods {
   ) async {
     String res = "Some error occur";
     try {
-      String photoUrl = await StorageMethods().uploadImageStorage(
+      String photoUrl = await storageMethods.uploadImageStorage(
         'posts',
         filePath,
         true,
       );
+      if (storageMethods.imagePostId != null) {
+        imageId = storageMethods.imagePostId!;
+      }
+
       String postId = const Uuid().v1();
       Post post = Post(
         description: description,
         uid: uid,
-        username: username,
         postId: postId,
         datePublished: DateTime.now(),
         postUrl: photoUrl,
-        profImage: profileImage,
         likes: [],
+        imageId: imageId,
       );
 
       _firestore.collection('posts').doc(postId).set(
@@ -111,12 +117,17 @@ class FirestoreMethods {
 
   //delete post
 
-  Future<void> deletePost(String postId) async {
+  Future<String> deletePost(
+      String postImageId, String userId, String imageId) async {
+    String res = 'Some error';
     try {
-      await _firestore.collection('posts').doc(postId).delete();
+      await _firestore.collection('posts').doc(postImageId).delete();
+      StorageMethods().postImageDelete(userId, imageId);
+      return res = 'success';
     } catch (e) {
       e.toString();
     }
+    return res;
   }
 
 //follow user
@@ -147,5 +158,36 @@ class FirestoreMethods {
         log(e.toString());
       }
     }
+  }
+
+  Future<String> reportPost(Map<String, dynamic> postData) async {
+    List<Report> listOfReportObject = []; //for fetchig firebase report database
+    List<Map<String, dynamic>> listOfReportMap =
+        []; //convert report object to json
+    final doc =
+        await _firestore.collection('report').doc(postData['postId']).get();
+//if firebase has some value then this if condition will work
+    if (doc.data() != null) {
+      final listOfReports = doc.data()!['report'];
+      listOfReportObject =
+          List<Report>.from(listOfReports.map((e) => Report.fromSnap(e)));
+    }
+    //new report add to database
+    listOfReportObject.add(Report.fromSnap(postData));
+//converting json format for uploading
+    listOfReportMap = List<Map<String, dynamic>>.from(
+        listOfReportObject.map((e) => e.toJson()));
+
+    String res = "Some error occur";
+    try {
+      _firestore
+          .collection('report')
+          .doc(postData['postId'])
+          .set({'report': listOfReportMap});
+      res = 'Success';
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
   }
 }

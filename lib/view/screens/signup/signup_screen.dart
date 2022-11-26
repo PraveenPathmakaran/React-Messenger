@@ -110,15 +110,18 @@ class SignUpScreen extends StatelessWidget {
                   //button login
 
                   ElevatedButton(
-                      onPressed: () async {
-                        await signUpController.signUpUser(context);
-                      },
-                      style: buttonStyle,
-                      child: Obx(() {
+                    onPressed: () async {
+                      await signUpController.signUpUser(context);
+                    },
+                    style: buttonStyle,
+                    child: Obx(
+                      () {
                         return signUpController.isLoading.value
                             ? circularProgressIndicator
                             : const Text('SignUp');
-                      })),
+                      },
+                    ),
+                  ),
                   kHeight10,
                   const LoginBottomContainer(title: 'Or sign in with'),
                   Obx(() {

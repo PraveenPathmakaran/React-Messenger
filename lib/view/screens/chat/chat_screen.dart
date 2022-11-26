@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:react_messenger/controller/chat_controller.dart';
-import 'package:react_messenger/const/colors.dart';
-
 import '../../../widgets/widgets.dart';
+import 'widgets/chat_textfiled.dart';
+import 'widgets/message_container.dart';
 
 class ChatScreen extends StatelessWidget {
   ChatScreen(
@@ -64,34 +64,13 @@ class ChatScreen extends StatelessWidget {
                               mainAxisAlignment: chatController.isSender(
                                       snapshot.data!.docs[index]['uid']
                                           .toString())
-                                  ? MainAxisAlignment.start
-                                  : MainAxisAlignment.end,
+                                  ? MainAxisAlignment.end
+                                  : MainAxisAlignment.start,
                               children: [
                                 Flexible(
-                                  child: Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 10, right: 10, top: 20),
-                                    padding: const EdgeInsets.all(15),
-                                    decoration: BoxDecoration(
-                                      color: chatController.isSender(snapshot
-                                              .data!.docs[index]['uid']
-                                              .toString())
-                                          ? const Color(0xFF202C33)
-                                          : const Color(0xFF005C4B),
-                                      borderRadius: chatController.isSender(
-                                              snapshot.data!.docs[index]['uid']
-                                                  .toString())
-                                          ? const BorderRadius.only(
-                                              topLeft: Radius.circular(30),
-                                              topRight: Radius.circular(30),
-                                              bottomRight: Radius.circular(30))
-                                          : const BorderRadius.only(
-                                              topLeft: Radius.circular(30),
-                                              bottomRight: Radius.circular(30),
-                                              bottomLeft: Radius.circular(30)),
-                                    ),
-                                    child: Text(
-                                        snapshot.data!.docs[index]['message']),
+                                  child: MessageContainer(
+                                    snapshot: snapshot,
+                                    index: index,
                                   ),
                                 )
                               ],
@@ -101,29 +80,8 @@ class ChatScreen extends StatelessWidget {
                       ),
                     ),
                     kHeight10,
-                    TextField(
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: lightDarColor,
-                        border: InputBorder.none,
-                        hintText: 'Write something',
-                        focusedBorder: UnderlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        enabledBorder: UnderlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.send_sharp,
-                            size: 30,
-                            color: Colors.blueAccent,
-                          ),
-                          onPressed: () => chatController
-                              .sendMessage(chatController.textController.text),
-                        ),
-                      ),
-                      controller: chatController.textController,
+                    MessageTextField(
+                      chatController: chatController,
                     ),
                   ],
                 );

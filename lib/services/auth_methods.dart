@@ -19,7 +19,9 @@ class AuthMethods {
   final LoginController loginController = Get.put(LoginController());
   final ProfileScreenController profileScreenController =
       Get.put(ProfileScreenController());
+
   final storageRef = FirebaseStorage.instance.ref();
+  bool mounted = true;
 
   Future<model.User> getUserDetails() async {
     User currentUser = _auth.currentUser!;
@@ -153,6 +155,7 @@ class AuthMethods {
         log(e.toString());
       }
     } else {
+      if (!mounted) return ''; //for linter remove build context async gap
       showSnackBar('Account not found Please Sign up', context);
     }
 

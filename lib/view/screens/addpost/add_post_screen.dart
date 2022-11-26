@@ -10,9 +10,7 @@ import '../../../widgets/widgets.dart';
 
 class AddPostScreen extends StatelessWidget {
   AddPostScreen({super.key});
-
   final TextEditingController textController = TextEditingController();
-
   final AddPostController addPostController = Get.put(AddPostController());
   final UserController userController = Get.put(UserController());
 
@@ -20,7 +18,6 @@ class AddPostScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.width * 60 / 100;
     final double widht = MediaQuery.of(context).size.width * 90 / 100;
-
     return Obx(
       (() {
         return addPostController.isLoading.value
