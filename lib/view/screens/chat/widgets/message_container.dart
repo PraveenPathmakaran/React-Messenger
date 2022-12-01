@@ -12,10 +12,14 @@ class MessageContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String month = DateFormat.MMMd()
-        .format(snapshot.data!.docs[index]['createdOn'].toDate());
-    final String time = DateFormat.jm()
-        .format(snapshot.data!.docs[index]['createdOn'].toDate());
+    String month = '';
+    String time = '';
+    if (snapshot.data!.docs[index]['createdOn'] != null) {
+      month = DateFormat.MMMd()
+          .format(snapshot.data!.docs[index]['createdOn'].toDate());
+      time = DateFormat.jm()
+          .format(snapshot.data!.docs[index]['createdOn'].toDate());
+    }
 
     return Container(
       margin: const EdgeInsets.only(left: 10, right: 10, top: 20),
@@ -49,7 +53,9 @@ class MessageContainer extends StatelessWidget {
           ),
           Text(
             "$month $time",
-            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800),
+            style: const TextStyle(
+              fontSize: 5,
+            ),
           ),
         ],
       ),

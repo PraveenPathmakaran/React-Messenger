@@ -42,34 +42,37 @@ class CommentCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      DateFormat.yMMMd()
-                          .format(commentSnapShot['datePublished'].toDate()),
-                      style: const TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.w800),
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
-          commentSnapShot['uid'] == userController.userData.value!.uid
-              ? Column(
-                  children: [
-                    IconButton(
-                      onPressed: () async {
-                        await FirestoreMethods().deleteComment(
-                          postId!,
-                          commentSnapShot['commentId'],
-                        );
-                      },
-                      icon: const Icon(Icons.delete),
-                    ),
-                  ],
-                )
-              : const SizedBox()
+          Column(
+            children: [
+              commentSnapShot['uid'] == userController.userData.value!.uid
+                  ? Column(
+                      children: [
+                        IconButton(
+                          onPressed: () async {
+                            await FirestoreMethods().deleteComment(
+                              postId!,
+                              commentSnapShot['commentId'],
+                            );
+                          },
+                          icon: const Icon(Icons.delete),
+                        ),
+                      ],
+                    )
+                  : const SizedBox(),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  DateFormat.yMMMd()
+                      .format(commentSnapShot['datePublished'].toDate()),
+                  style: const TextStyle(fontSize: 7),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

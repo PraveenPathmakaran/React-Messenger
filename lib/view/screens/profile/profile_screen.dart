@@ -1,10 +1,9 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:react_messenger/controller/profile_screen_controller.dart';
 import 'package:react_messenger/const/colors.dart';
+import 'package:react_messenger/controller/user_list_controller.dart';
 import 'package:react_messenger/view/screens/chat/chat_screen.dart';
 import 'package:react_messenger/view/screens/profile/widget/follow_button.dart';
 import 'package:react_messenger/view/screens/profile/widget/follow_button_widget.dart';
@@ -22,6 +21,7 @@ class ProfileScreen extends StatelessWidget {
   final ProfileScreenController profileScreenController =
       Get.put(ProfileScreenController());
   final UserController userController = Get.put(UserController());
+  final UserListController userListController = Get.put(UserListController());
   @override
   Widget build(
     BuildContext context,
@@ -118,15 +118,31 @@ class ProfileScreen extends StatelessWidget {
                                   'Posts',
                                   width),
                               kWidth15,
-                              buildStatColumn(
-                                  profileScreenController.followers.value,
-                                  'Followers',
-                                  width),
+                              GestureDetector(
+                                onTap: () async {
+                                  await filteredListGet('followers');
+                                  Get.off(() => FilteredUsersList(
+                                        title: 'Followers',
+                                      ));
+                                },
+                                child: buildStatColumn(
+                                    profileScreenController.followers.value,
+                                    'Followers',
+                                    width),
+                              ),
                               kWidth15,
-                              buildStatColumn(
-                                  profileScreenController.following.value,
-                                  'Following',
-                                  width),
+                              GestureDetector(
+                                onTap: () async {
+                                  await filteredListGet('following');
+                                  Get.off(() => FilteredUsersList(
+                                        title: 'Following',
+                                      ));
+                                },
+                                child: buildStatColumn(
+                                    profileScreenController.following.value,
+                                    'Following',
+                                    width),
+                              ),
                               kWidth15,
                             ],
                           ),
@@ -183,5 +199,12 @@ class ProfileScreen extends StatelessWidget {
               );
       },
     );
+  }
+
+  Future<void> filteredListGet(String dataName) async {
+    userListController.userList.clear();
+    userListController.userId =
+        await profileScreenController.userData.value['uid'];
+    await userListController.usersListGet(dataName);
   }
 }

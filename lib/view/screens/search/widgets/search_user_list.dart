@@ -5,15 +5,16 @@ import '../../profile/profile_screen.dart';
 
 class SearchUserList extends StatelessWidget {
   const SearchUserList({
-    Key? key,
+    super.key,
     required this.searchController,
-  }) : super(key: key);
+  });
   final SearchController searchController;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (BuildContext context) {
           return ProfileScreen(
               userUid: searchController.postDocumentList.value!.docs[0]
                   .data()['uid']);

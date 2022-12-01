@@ -1,10 +1,12 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:react_messenger/const/colors.dart';
-import 'package:react_messenger/controller/signup_controller.dart';
+
+import '../../../const/colors.dart';
 import '../../../const/const.dart';
+import '../../../controller/signup_controller.dart';
 import '../../../utils/utils.dart';
 import '../../../widgets/widgets.dart';
 import '../../widgets/text_field_input.dart';

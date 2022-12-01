@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:react_messenger/controller/user_controller.dart';
-import 'package:react_messenger/services/auth_methods.dart';
-import 'package:react_messenger/services/firestore_methods.dart';
-import 'package:react_messenger/utils/utils.dart';
+
+import '../services/auth_methods.dart';
+import '../services/firestore_methods.dart';
+import '../utils/utils.dart';
+import 'user_controller.dart';
 
 class AddPostController extends GetxController {
   final Rxn<String> filePath = Rxn<String>();
@@ -16,19 +17,19 @@ class AddPostController extends GetxController {
   AuthMethods currentUser = AuthMethods();
   final UserController userController = Get.put(UserController());
 
-  selectImage(BuildContext context) async {
+  Future<void> selectImage(BuildContext context) async {
     return showDialog(
         context: context,
-        builder: (context) {
+        builder: (BuildContext context) {
           return SimpleDialog(
             title: const Text('Create a Post'),
-            children: [
+            children: <Widget>[
               SimpleDialogOption(
                 padding: const EdgeInsets.all(20),
                 child: const Text('Take a Photo'),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  String filePath = await pickImage(ImageSource.camera);
+                  final String filePath = await pickImage(ImageSource.camera);
 
                   addPath(filePath);
                 },
@@ -38,7 +39,7 @@ class AddPostController extends GetxController {
                 child: const Text('Choose a Photo'),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  String filePath = await pickImage(ImageSource.gallery);
+                  final String filePath = await pickImage(ImageSource.gallery);
                   addPath(filePath);
                 },
               ),
@@ -61,7 +62,7 @@ class AddPostController extends GetxController {
     isLoading.value = true;
 
     try {
-      String res = await FirestoreMethods().uploadPost(
+      final String res = await FirestoreMethods().uploadPost(
         description,
         filePath.value!,
         userController.userData.value!.uid,
@@ -69,7 +70,9 @@ class AddPostController extends GetxController {
         userController.userData.value!.photoUrl,
       );
 
-      if (!mounted) return; //for removing build context in asynchronous gap
+      if (!mounted) {
+        return;
+      } //for removing build context in asynchronous gap
       if (res == 'Success') {
         isLoading.value = false;
         filePath.value = null;

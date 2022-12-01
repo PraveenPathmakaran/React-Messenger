@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
-import 'package:react_messenger/services/auth_methods.dart';
+import '../services/auth_methods.dart';
 
 import '../models/user.dart';
 

@@ -11,7 +11,8 @@ class SearchGridview extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: FirebaseFirestore.instance.collection('posts').get(),
-      builder: (context, snapshot) {
+      builder: (BuildContext context,
+          AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
         if (!snapshot.hasData) {
           return circularProgressIndicator;
         }
@@ -23,11 +24,12 @@ class SearchGridview extends StatelessWidget {
               itemCount: (snapshot.data! as dynamic).docs.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3, mainAxisSpacing: 10, crossAxisSpacing: 10),
-              itemBuilder: (context, index) {
+              itemBuilder: (BuildContext context, int index) {
                 return Image.network(
                   (snapshot.data! as dynamic).docs[index]['postUrl'],
                   fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
                     if (loadingProgress == null) {
                       return Image.network(
                         (snapshot.data! as dynamic).docs[index]['postUrl'],

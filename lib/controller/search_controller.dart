@@ -8,7 +8,7 @@ class SearchController extends GetxController {
   String name = '';
 
   final Rxn<QuerySnapshot<Map<String, dynamic>>> postDocumentList = Rxn();
-  initSearchingPost(String textEntered) async {
+  Future<void> initSearchingPost(String textEntered) async {
     if (textEntered == '') {
       return;
     }

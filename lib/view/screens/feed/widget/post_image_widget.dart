@@ -32,13 +32,13 @@ class PostImageWidget extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           SizedBox(
-            //height: MediaQuery.of(context).size.height * 0.35,
+            height: MediaQuery.of(context).size.width * 0.9,
             width: double.infinity,
             child: GestureDetector(
               onTap: () => showImageAlert(postSnapShot['postUrl'], context),
               child: Image.network(
                 postSnapShot['postUrl'],
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
                   return Center(

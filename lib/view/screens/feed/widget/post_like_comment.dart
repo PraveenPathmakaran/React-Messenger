@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:react_messenger/controller/user_list_controller.dart';
 import '../../../../const/colors.dart';
 import '../../../../controller/user_controller.dart';
 import '../../../../services/firestore_methods.dart';
@@ -8,7 +10,7 @@ import '../../../../widgets/widgets.dart';
 import '../../comment/comments_screen.dart';
 
 class PostLikeCommentWidget extends StatelessWidget {
-  const PostLikeCommentWidget({
+  PostLikeCommentWidget({
     Key? key,
     required this.postSnapShot,
     required this.userController,
@@ -16,6 +18,7 @@ class PostLikeCommentWidget extends StatelessWidget {
 
   final Map<String, dynamic> postSnapShot;
   final UserController userController;
+  final UserListController userListController = Get.put(UserListController());
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +55,20 @@ class PostLikeCommentWidget extends StatelessWidget {
                 ],
               ),
               //like count
-              Text('Liked by ${postSnapShot['likes'].length} people'),
+              GestureDetector(
+                  onTap: () async {
+                    userListController.userList.clear();
+                    await userListController
+                        .postLikesGet(postSnapShot['postId']);
+
+                    Get.off(() => FilteredUsersList(
+                          title: 'Likes',
+                        ));
+                  },
+                  child: postSnapShot['likes'].length == 0
+                      ? const Text('')
+                      : Text(
+                          'Liked by ${postSnapShot['likes'].length} people')),
               kHeight10,
 
               //description
@@ -109,14 +125,20 @@ class PostLikeCommentWidget extends StatelessWidget {
 
               kHeight10,
               Text(
-                DateFormat.yMMMMd()
+                DateFormat.MMMEd()
                     .format(postSnapShot['datePublished'].toDate()),
-                style: const TextStyle(fontSize: 14, color: secondaryColor),
+                style: const TextStyle(fontSize: 10, color: secondaryColor),
               ),
             ],
           ),
         ],
       ),
     );
+  }
+
+  Future<void> filteredListGet(String dataName) async {
+    userListController.userList.clear();
+    userListController.userId = await postSnapShot['uid'];
+    await userListController.usersListGet(dataName);
   }
 }

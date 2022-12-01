@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/services/firestore_methods.dart';
-import 'package:react_messenger/utils/utils.dart';
+
+import '../services/firestore_methods.dart';
+import '../utils/utils.dart';
 
 class ReportController extends GetxController {
   TextEditingController reportTextEditingController = TextEditingController();
@@ -18,7 +19,9 @@ class ReportController extends GetxController {
       'reason': reportTextEditingController.text,
     });
     isLoading.value = false;
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     showSnackBar(result, context);
   }
 }

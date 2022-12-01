@@ -1,11 +1,13 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
-import 'package:react_messenger/controller/login_controller.dart';
-import 'package:react_messenger/controller/signup_controller.dart';
+
 import '../../../const/const.dart';
+import '../../../controller/login_controller.dart';
+import '../../../controller/signup_controller.dart';
 import '../../../utils/utils.dart';
 import '../../../widgets/widgets.dart';
 import '../../widgets/login_bottom_container.dart';
@@ -17,7 +19,7 @@ class SignUpScreen extends StatelessWidget {
   final LoginController loginController = Get.put(LoginController());
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -103,7 +105,7 @@ class SignUpScreen extends StatelessWidget {
                     hintText: 'Conform your passoword',
                     textInputType: TextInputType.text,
                     isPass: true,
-                    label: "Conform password",
+                    label: 'Conform password',
                     icon: Icons.lock,
                   ),
                   kHeight25,
@@ -139,10 +141,10 @@ class SignUpScreen extends StatelessWidget {
                   }),
                   //transition to signing up
                   Column(
-                    children: [
+                    children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           const LoginBottomContainer(
                               title: 'Already have account ? '),
                           GestureDetector(

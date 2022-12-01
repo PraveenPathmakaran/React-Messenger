@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/controller/profile_screen_controller.dart';
-import 'package:react_messenger/controller/user_controller.dart';
-import 'package:react_messenger/utils/utils.dart';
-import 'package:react_messenger/view/screens/home/home_screen.dart';
-import '../view/screens/login/login_screen.dart';
+
 import '../services/auth_methods.dart';
+import '../utils/utils.dart';
+import '../view/screens/home/home_screen.dart';
+import '../view/screens/login/login_screen.dart';
+import 'profile_screen_controller.dart';
+import 'user_controller.dart';
 
 class SignUpController extends GetxController {
   final TextEditingController emailController = TextEditingController();
@@ -64,22 +65,24 @@ class SignUpController extends GetxController {
 
     isLoading.value = false;
 
-    if (!mounted) return; //for linter remove build context async gap
+    if (!mounted) {
+      return;
+    } //for linter remove build context async gap
 
     if (res != 'success') {
       if (res ==
-          "[firebase_auth/invalid-email] The email address is badly formatted.") {
+          '[firebase_auth/invalid-email] The email address is badly formatted.') {
         showSnackBar('Please enter a valid email address', context);
         return;
       }
 
       if (res ==
-          "[firebase_auth/weak-password] Password should be at least 6 characters") {
+          '[firebase_auth/weak-password] Password should be at least 6 characters') {
         showSnackBar('Password should be atleast 6 character', context);
         return;
       }
       if (res ==
-          "[firebase_auth/email-already-in-use] The email address is already in use by another account.") {
+          '[firebase_auth/email-already-in-use] The email address is already in use by another account.') {
         showSnackBar(
             'The email address is already in use by another account', context);
         return;
@@ -115,7 +118,7 @@ class SignUpController extends GetxController {
 
   Future<void> updateUserController(String userId, BuildContext context) async {
     isLoading.value = true;
-    final result = await authMethods.updateUser(
+    final String result = await authMethods.updateUser(
         username: usernameController.text,
         bio: bioController.text,
         userId: userId,

@@ -8,7 +8,7 @@ class PostController extends GetxController {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
   Future<Map<String, dynamic>> valueGet(String userUid) async {
-    QuerySnapshot<Map<String, dynamic>> data = await firebaseFirestore
+    final QuerySnapshot<Map<String, dynamic>> data = await firebaseFirestore
         .collection('user')
         .where('uid', isEqualTo: userUid)
         .get();

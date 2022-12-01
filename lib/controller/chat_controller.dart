@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/controller/user_controller.dart';
+import 'user_controller.dart';
 
 class ChatController extends GetxController {
   CollectionReference chats = FirebaseFirestore.instance.collection('chats');
@@ -12,12 +12,15 @@ class ChatController extends GetxController {
   TextEditingController textController = TextEditingController();
 
   void sendMessage(String message) {
-    if (message == '') return;
+    if (message == '') {
+      return;
+    }
     chats.doc(chatDocId.value).collection('messages').add({
       'createdOn': FieldValue.serverTimestamp(),
       'uid': userController.userData.value!.uid,
       'message': message
-    }).then((value) => textController.text = '');
+    }).then((DocumentReference<Map<String, dynamic>> value) =>
+        textController.text = '');
   }
 
   bool isSender(String friend) {
@@ -31,7 +34,7 @@ class ChatController extends GetxController {
     return Alignment.topLeft;
   }
 
-  void chat(String friendUid) async {
+  Future<void> chat(String friendUid) async {
     await chats
         .where('users', isEqualTo: {
           friendUid: null,
@@ -48,7 +51,7 @@ class ChatController extends GetxController {
                 userController.userData.value!.uid: null,
                 friendUid: null,
               }
-            }).then((value) {
+            }).then((DocumentReference<Object?> value) {
               chatDocId.value = value.id;
             });
           }

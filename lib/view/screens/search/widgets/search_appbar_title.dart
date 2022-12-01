@@ -4,9 +4,9 @@ import '../../../../controller/search_controller.dart';
 
 class SearchAppBarTitle extends StatelessWidget {
   const SearchAppBarTitle({
-    Key? key,
+    super.key,
     required this.searchController,
-  }) : super(key: key);
+  });
   final SearchController searchController;
   @override
   Widget build(BuildContext context) {

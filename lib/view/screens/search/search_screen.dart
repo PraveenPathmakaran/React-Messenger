@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/controller/search_controller.dart';
-import 'package:react_messenger/const/colors.dart';
-import 'package:react_messenger/view/screens/search/widgets/search_appbar_title.dart';
-import 'package:react_messenger/view/screens/search/widgets/search_gridview.dart';
-import 'package:react_messenger/view/screens/search/widgets/search_user_list.dart';
+
+import '../../../const/colors.dart';
+import '../../../controller/search_controller.dart';
+import 'widgets/search_appbar_title.dart';
+import 'widgets/search_gridview.dart';
+import 'widgets/search_user_list.dart';
 
 class SearchScreen extends StatelessWidget {
   SearchScreen({super.key});

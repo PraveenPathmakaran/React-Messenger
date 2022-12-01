@@ -36,7 +36,6 @@ class PostCard extends StatelessWidget {
                       postController: postController,
                     ),
                     //Like comment section
-                    kHeight10,
                     PostLikeCommentWidget(
                       postSnapShot: postSnapShot,
                       userController: userController,
