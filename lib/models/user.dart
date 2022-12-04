@@ -8,15 +8,15 @@ class User {
       required this.username,
       required this.followers,
       required this.following,
-      this.bio = 'Write something about you'});
+      this.bio = 'Available'});
   final String email;
   final String uid;
   final String photoUrl;
   final String username;
   final String bio;
 
-  final List<dynamic> followers;
-  final List<dynamic> following;
+  final List<String> followers;
+  final List<String> following;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         'username': username,
@@ -28,8 +28,8 @@ class User {
         'bio': bio,
       };
 
-  static User fromSnap(DocumentSnapshot snap) {
-    var snapshot = snap.data() as Map<String, dynamic>;
+  static User fromSnap(DocumentSnapshot<Object?> snap) {
+    final Map<String, dynamic> snapshot = snap.data()! as Map<String, dynamic>;
 
     return User(
       email: snapshot['email'] as String,
@@ -37,8 +37,12 @@ class User {
       photoUrl: snapshot['photoUrl'] as String,
       username: snapshot['username'] as String,
       bio: snapshot['bio'] as String,
-      followers: snapshot['followers'] as List<dynamic>,
-      following: snapshot['following'] as List<dynamic>,
+      followers: (snapshot['followers'] as List<dynamic>)
+          .map((dynamic e) => e as String)
+          .toList(),
+      following: (snapshot['following'] as List<dynamic>)
+          .map((dynamic e) => e as String)
+          .toList(),
     );
   }
 }

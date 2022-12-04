@@ -15,10 +15,10 @@ class MessageContainer extends StatelessWidget {
     String month = '';
     String time = '';
     if (snapshot.data!.docs[index]['createdOn'] != null) {
-      month = DateFormat.MMMd()
-          .format(snapshot.data!.docs[index]['createdOn'].toDate());
-      time = DateFormat.jm()
-          .format(snapshot.data!.docs[index]['createdOn'].toDate());
+      month = DateFormat.MMMd().format(
+          (snapshot.data!.docs[index]['createdOn'] as Timestamp).toDate());
+      time = DateFormat.jm().format(
+          (snapshot.data!.docs[index]['createdOn'] as Timestamp).toDate());
     }
 
     return Container(
@@ -44,15 +44,15 @@ class MessageContainer extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Text(
-            snapshot.data!.docs[index]['message'],
+            snapshot.data!.docs[index]['message'] as String,
           ),
           const SizedBox(
             height: 5,
           ),
           Text(
-            "$month $time",
+            '$month $time',
             style: const TextStyle(
               fontSize: 5,
             ),

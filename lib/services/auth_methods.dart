@@ -1,15 +1,16 @@
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:react_messenger/controller/login_controller.dart';
-import 'package:react_messenger/controller/profile_screen_controller.dart';
-import 'package:react_messenger/utils/utils.dart';
+
+import '../controller/login_controller.dart';
 import '../models/user.dart' as model;
+import '../utils/utils.dart';
 import 'storage_methods.dart';
 
 class AuthMethods {
@@ -17,16 +18,14 @@ class AuthMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final LoginController loginController = Get.put(LoginController());
-  final ProfileScreenController profileScreenController =
-      Get.put(ProfileScreenController());
 
-  final storageRef = FirebaseStorage.instance.ref();
+  final Reference storageRef = FirebaseStorage.instance.ref();
   bool mounted = true;
 
   Future<model.User> getUserDetails() async {
-    User currentUser = _auth.currentUser!;
+    final User currentUser = _auth.currentUser!;
     await _auth.currentUser!.reload();
-    DocumentSnapshot snap =
+    final DocumentSnapshot<Object?> snap =
         await _firestore.collection('user').doc(currentUser.uid).get();
     return model.User.fromSnap(snap);
   }
@@ -55,13 +54,13 @@ class AuthMethods {
             .uploadImageStorage('profilePics', file, false);
         //add user to our database
 
-        model.User user = model.User(
+        final model.User user = model.User(
             email: email,
             username: username,
             uid: cred.user!.uid,
             photoUrl: photoUrl,
-            followers: [],
-            following: []);
+            followers: <String>[],
+            following: <String>[]);
         await _firestore.collection('user').doc(cred.user!.uid).set(
               user.toJson(),
             );
@@ -83,6 +82,7 @@ class AuthMethods {
         await _auth.signInWithEmailAndPassword(
             email: email, password: password);
         res = 'success';
+        await _auth.currentUser!.reload();
       } else {
         res = 'Please enter all the fieild';
       }
@@ -96,8 +96,11 @@ class AuthMethods {
   Future<String> googleSingUp() async {
     String res = 'Some error';
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser == null) return 'User is null';
-    final googleAuth = await googleUser.authentication;
+    if (googleUser == null) {
+      return 'User is null';
+    }
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
 
     try {
       loginController.gIsLoading.value = true;
@@ -111,13 +114,14 @@ class AuthMethods {
       }
       res = 'Success';
 
-      model.User user = model.User(
-          email: _auth.currentUser!.email!,
-          username: _auth.currentUser!.displayName!,
-          uid: userCredential.user!.uid,
-          photoUrl: _auth.currentUser!.photoURL!,
-          followers: [],
-          following: []);
+      final model.User user = model.User(
+        email: _auth.currentUser!.email!,
+        username: _auth.currentUser!.displayName!,
+        uid: userCredential.user!.uid,
+        photoUrl: _auth.currentUser!.photoURL!,
+        followers: <String>[],
+        following: <String>[],
+      );
       await _firestore.collection('user').doc(userCredential.user!.uid).set(
             user.toJson(),
           );
@@ -131,11 +135,15 @@ class AuthMethods {
   Future<String> googleLogin(BuildContext context) async {
     String res = 'Some error';
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser == null) return 'User is null';
+    if (googleUser == null) {
+      return 'User is null';
+    }
     //fetch method used for google auth bug if user click google authentification that time new account created.
-    final listOfUser = await _auth.fetchSignInMethodsForEmail(googleUser.email);
+    final List<String> listOfUser =
+        await _auth.fetchSignInMethodsForEmail(googleUser.email);
     if (listOfUser.contains('google.com')) {
-      final googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       try {
         loginController.gIsLoading.value = true;
@@ -149,13 +157,16 @@ class AuthMethods {
           return 'User credential null';
         }
         res = 'Success';
+        await _auth.currentUser!.reload();
 
         loginController.gIsLoading.value = false;
       } catch (e) {
         log(e.toString());
       }
     } else {
-      if (!mounted) return ''; //for linter remove build context async gap
+      if (!mounted) {
+        return '';
+      } //for linter remove build context async gap
       showSnackBar('Account not found Please Sign up', context);
     }
 
@@ -172,17 +183,27 @@ class AuthMethods {
     try {
       if (username.isNotEmpty || bio.isNotEmpty) {
         if (file != null) {
-          final imageRef = storageRef.child('profilePics').child(userId);
+          final Reference imageRef =
+              storageRef.child('profilePics').child(userId);
           final UploadTask uploadTask = imageRef.putFile(File(file));
           final TaskSnapshot snap = await uploadTask;
           final String downloadUrl = await snap.ref.getDownloadURL();
-          await _firestore.collection('user').doc(userId).update(
-              {'bio': bio, 'username': username, 'photoUrl': downloadUrl});
+          await _firestore
+              .collection('user')
+              .doc(userId)
+              .update(<String, dynamic>{
+            'bio': bio,
+            'username': username,
+            'photoUrl': downloadUrl
+          });
 
           return res = 'success';
         }
 
-        await _firestore.collection('user').doc(userId).update({
+        await _firestore
+            .collection('user')
+            .doc(userId)
+            .update(<String, dynamic>{
           'bio': bio,
           'username': username,
         });

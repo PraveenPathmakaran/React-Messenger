@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../services/auth_methods.dart';
 import '../utils/utils.dart';
-import '../view/screens/home/home_screen.dart';
 import '../view/screens/login/login_screen.dart';
-import 'profile_screen_controller.dart';
 import 'user_controller.dart';
 
 class SignUpController extends GetxController {
@@ -17,9 +14,8 @@ class SignUpController extends GetxController {
   final TextEditingController bioController = TextEditingController();
   final AuthMethods authMethods = AuthMethods();
   final UserController userController = Get.put(UserController());
-  final ProfileScreenController profileScreenController =
-      Get.put(ProfileScreenController());
-  Rxn<String> image = Rxn();
+
+  Rxn<String> image = Rxn<String>();
   Rx<bool> isLoading = false.obs;
   bool mounted = true; //lint remove
   Future<void> signUpUser(BuildContext context) async {
@@ -89,13 +85,9 @@ class SignUpController extends GetxController {
       }
       showSnackBar(res, context);
     } else {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute<Widget>(
-          builder: (BuildContext context) => const MobileScreenLayout(),
-        ),
-        (Route<dynamic> route) => false,
-      );
+      Get.offAll(() => LoginScreen());
       showSnackBar('Sign up Successfull', context);
+      authMethods.signOut();
     }
   }
 
@@ -125,7 +117,6 @@ class SignUpController extends GetxController {
         file: image.value);
     if (result == 'success') {
       userController.getUser();
-      profileScreenController.getData(context: context, uid: userId);
 
       Get.back();
       isLoading.value = false;
@@ -134,8 +125,6 @@ class SignUpController extends GetxController {
 
   @override
   void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
     conformPasswordController.dispose();
     usernameController.dispose();
     image.value = null;

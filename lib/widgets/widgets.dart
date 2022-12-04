@@ -1,11 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import '../const/colors.dart';
-import '../controller/user_controller.dart';
-import '../controller/user_list_controller.dart';
-import '../view/screens/home/home_screen.dart';
-import '../view/screens/profile/profile_screen.dart';
 
 const Widget kHeight50 = SizedBox(
   height: 50,
@@ -96,58 +91,27 @@ class CircleAvatarWidget extends StatelessWidget {
   }
 }
 
-class FilteredUsersList extends StatelessWidget {
-  FilteredUsersList({super.key, required this.title});
-  final String title;
-
-  final UserListController userListController = Get.put(UserListController());
-  final UserController userController = Get.put(UserController());
-
-  @override
-  Widget build(BuildContext context) {
-    return userListController.isLoading.value
-        ? circularProgressIndicator
-        : Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              title: Text(title),
-              backgroundColor: mobileBackgroundColor,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => Get.offAll(() => const MobileScreenLayout()),
-              ),
-            ),
-            body: ListView.builder(
-                itemCount: userListController.userList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return FutureBuilder(
-                      future: FirebaseFirestore.instance
-                          .collection('user')
-                          .doc(userListController.userList[index].uid)
-                          .get(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
-                              snapshot) {
-                        if (snapshot.data == null) {
-                          return kHeight10;
-                        }
-                        return ListTile(
-                          onTap: () {
-                            final bool currentUser = snapshot.data!['uid'] ==
-                                userController.userData.value!.uid;
-                            Get.to(() => ProfileScreen(
-                                  userUid: snapshot.data!['uid'],
-                                  currentUser: currentUser,
-                                ));
-                          },
-                          leading: CircleAvatarWidget(
-                            networkImagePath: snapshot.data!['photoUrl'],
-                            radius: 25,
-                          ),
-                          title: Text(snapshot.data!['username']),
-                        );
-                      });
-                }),
-          );
-  }
+Future<bool> onBackButtonPressed(BuildContext context) async {
+  final bool? exitApp = await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Really'),
+        content: const Text('Do you want to close the app?'),
+        actions: <Widget>[
+          TextButton(
+              onPressed: () {
+                Get.back();
+              },
+              child: const Text('No')),
+          TextButton(
+              onPressed: () {
+                SystemNavigator.pop();
+              },
+              child: const Text('Yes'))
+        ],
+      );
+    },
+  );
+  return exitApp!;
 }

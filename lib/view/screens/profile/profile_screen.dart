@@ -1,53 +1,55 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/controller/profile_screen_controller.dart';
-import 'package:react_messenger/const/colors.dart';
-import 'package:react_messenger/controller/user_list_controller.dart';
-import 'package:react_messenger/view/screens/chat/chat_screen.dart';
-import 'package:react_messenger/view/screens/profile/widget/follow_button.dart';
-import 'package:react_messenger/view/screens/profile/widget/follow_button_widget.dart';
-import 'package:react_messenger/view/screens/profile/widget/profile_gridview.dart';
-import 'package:react_messenger/view/screens/profile/widget/widgets.dart';
-import 'package:react_messenger/view/screens/update/update_screen.dart';
+import '../../../const/colors.dart';
+import '../../../controller/friend_profile_controller.dart';
 import '../../../controller/user_controller.dart';
+import '../../../controller/user_list_controller.dart';
+import '../../../services/auth_methods.dart';
+import '../../../widgets/filtered_users_list.dart';
 import '../../../widgets/widgets.dart';
+import '../drawer/drawer.dart';
+import '../login/login_screen.dart';
+import '../update/update_screen.dart';
+import 'widget/follow_button.dart';
+import 'widget/profile_gridview.dart';
+import 'widget/widgets.dart';
 
-// ignore: must_be_immutable
 class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key, this.userUid = '', this.currentUser = false});
-  String userUid = '';
-  bool currentUser = false;
-  final ProfileScreenController profileScreenController =
-      Get.put(ProfileScreenController());
+  ProfileScreen({super.key});
+
   final UserController userController = Get.put(UserController());
   final UserListController userListController = Get.put(UserListController());
+  final FriendProfileScreenController friendProfileScreenController =
+      Get.put(FriendProfileScreenController());
   @override
   Widget build(
     BuildContext context,
   ) {
-    if (currentUser && userController.userData.value != null) {
-      userUid = userController.userData.value!.uid;
-    }
-    double width = MediaQuery.of(context).size.width;
-    WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) {
-        profileScreenController.getData(context: context, uid: userUid);
-      },
-    );
+    userController.userData.value = null;
+    friendProfileScreenController.getData(context: context, uid: null);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await userController.getUser();
+      await friendProfileScreenController.getData(
+          context: context, uid: userController.userData.value!.uid);
+    });
+
+    final double width = MediaQuery.of(context).size.width;
+
     return Obx(
       () {
-        return profileScreenController.isLoading.value ||
-                profileScreenController.userData.value == null ||
-                userController.userData.value == null ||
-                userUid == ''
+        return userController.userData.value == null
             ? circularProgressIndicator
             : Scaffold(
-                appBar: const AppBarWidget(
-                  title: '',
+                appBar: AppBar(
                   centerTitle: false,
                   backgroundColor: mobileBackgroundColor,
                   elevation: 0,
+                ),
+                drawer: const Drawer(
+                  width: 250,
+                  backgroundColor: mobileBackgroundColor,
+                  child: DrawerContent(),
                 ),
                 body: SafeArea(
                   child: SingleChildScrollView(
@@ -55,46 +57,39 @@ class ProfileScreen extends StatelessWidget {
                       width: width,
                       alignment: Alignment.center,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           kHeight25,
                           //Circle Avatar
                           Stack(
                             alignment: Alignment.bottomRight,
-                            children: [
+                            children: <Widget>[
                               CircleAvatarWidget(
-                                networkImagePath: profileScreenController
-                                    .userData.value['photoUrl'],
+                                networkImagePath:
+                                    userController.userData.value!.photoUrl,
                                 radius: 80,
                               ),
-                              currentUser
-                                  ? IconButton(
-                                      onPressed: () {
-                                        Get.to(() => UpdateScreen(
-                                              profileUrl:
-                                                  profileScreenController
-                                                      .userData
-                                                      .value['photoUrl'],
-                                              username: profileScreenController
-                                                  .userData.value['username'],
-                                              bio: profileScreenController
-                                                  .userData.value['bio'],
-                                              userId: userUid,
-                                            ));
-                                      },
-                                      icon: const Icon(
-                                        Icons.edit_note_outlined,
-                                        size: 40,
-                                      ))
-                                  : const SizedBox(),
+                              IconButton(
+                                  onPressed: () {
+                                    Get.to(() => UpdateScreen(
+                                        profileUrl: userController
+                                            .userData.value!.photoUrl,
+                                        username: userController
+                                            .userData.value!.username,
+                                        bio: userController.userData.value!.bio,
+                                        userId: userController
+                                            .userData.value!.uid));
+                                  },
+                                  icon: const Icon(
+                                    Icons.edit_note_outlined,
+                                    size: 40,
+                                  ))
                             ],
                           ),
                           //Username
                           Container(
                             padding: const EdgeInsets.only(top: 15),
                             child: Text(
-                              profileScreenController
-                                  .userData.value['username'],
+                              userController.userData.value!.username,
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 25),
                             ),
@@ -104,29 +99,47 @@ class ProfileScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.only(top: 1),
                             child: Text(
-                              profileScreenController.userData.value['bio'],
+                              userController.userData.value!.bio,
                             ),
                           ),
                           kHeight25,
                           //follow following post row
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
+                            children: <Widget>[
                               kWidth15,
-                              buildStatColumn(
-                                  profileScreenController.postLength,
-                                  'Posts',
-                                  width),
+                              FutureBuilder<
+                                      QuerySnapshot<Map<String, dynamic>>>(
+                                  future: FirebaseFirestore.instance
+                                      .collection('posts')
+                                      .where('uid',
+                                          isEqualTo: userController
+                                              .userData.value!.uid)
+                                      .get(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<
+                                              QuerySnapshot<
+                                                  Map<String, dynamic>>>
+                                          snapshot) {
+                                    if (snapshot.data == null) {
+                                      return circularProgressIndicator;
+                                    }
+                                    return buildStatColumn(
+                                        snapshot.data!.docs.length,
+                                        'Posts',
+                                        width);
+                                  }),
                               kWidth15,
                               GestureDetector(
                                 onTap: () async {
                                   await filteredListGet('followers');
-                                  Get.off(() => FilteredUsersList(
+                                  Get.to(() => FilteredUsersList(
                                         title: 'Followers',
                                       ));
                                 },
                                 child: buildStatColumn(
-                                    profileScreenController.followers.value,
+                                    userController
+                                        .userData.value!.followers.length,
                                     'Followers',
                                     width),
                               ),
@@ -134,62 +147,36 @@ class ProfileScreen extends StatelessWidget {
                               GestureDetector(
                                 onTap: () async {
                                   await filteredListGet('following');
-                                  Get.off(() => FilteredUsersList(
+                                  Get.to(() => FilteredUsersList(
                                         title: 'Following',
                                       ));
                                 },
                                 child: buildStatColumn(
-                                    profileScreenController.following.value,
+                                    userController
+                                        .userData.value!.following.length,
                                     'Following',
                                     width),
                               ),
                               kWidth15,
                             ],
                           ),
-                          //buttton
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                child: FollowButtonWidget(
-                                  userController: userController,
-                                  userUid: userUid,
-                                  profileScreenController:
-                                      profileScreenController,
-                                ),
-                              ),
-                              currentUser
-                                  ? const SizedBox()
-                                  : Flexible(
-                                      child: FollowButton(
-                                        backgroundColor: mobileBackgroundColor,
-                                        borderColor: Colors.white,
-                                        text: 'Chat',
-                                        textColor: Colors.white,
-                                        function: () async {
-                                          final userdata =
-                                              await FirebaseFirestore.instance
-                                                  .collection('user')
-                                                  .where('uid',
-                                                      isEqualTo: userUid)
-                                                  .get();
-                                          final data = userdata.docs[0].data();
-                                          Get.to(
-                                            ChatScreen(
-                                              friendName: data['username'],
-                                              friendUid: data['uid'],
-                                              friendPhotoUrl: data['photoUrl'],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                            ],
-                          ),
+                          FollowButton(
+                              function: () async {
+                                await AuthMethods().signOut().then(
+                                    (void value) =>
+                                        Get.offAll(() => LoginScreen()));
+
+                                userController.userData.value = null;
+                              },
+                              backgroundColor: mobileBackgroundColor,
+                              borderColor: Colors.grey,
+                              text: 'Sign Out',
+                              textColor: primaryColor),
+
                           //Gridview
                           const Divider(),
                           ProfileGridviewWidget(
-                            userUid: userUid,
+                            userUid: userController.userData.value!.uid,
                           )
                         ],
                       ),
@@ -203,8 +190,7 @@ class ProfileScreen extends StatelessWidget {
 
   Future<void> filteredListGet(String dataName) async {
     userListController.userList.clear();
-    userListController.userId =
-        await profileScreenController.userData.value['uid'];
+    userListController.userId = userController.userData.value!.uid;
     await userListController.usersListGet(dataName);
   }
 }

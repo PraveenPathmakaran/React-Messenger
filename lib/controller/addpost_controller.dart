@@ -29,9 +29,9 @@ class AddPostController extends GetxController {
                 child: const Text('Take a Photo'),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  final String filePath = await pickImage(ImageSource.camera);
+                  final String filePath1 = await pickImage(ImageSource.camera);
 
-                  addPath(filePath);
+                  filePath.value = filePath1;
                 },
               ),
               SimpleDialogOption(
@@ -39,8 +39,8 @@ class AddPostController extends GetxController {
                 child: const Text('Choose a Photo'),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  final String filePath = await pickImage(ImageSource.gallery);
-                  addPath(filePath);
+                  final String filePath2 = await pickImage(ImageSource.gallery);
+                  filePath.value = filePath2;
                 },
               ),
               SimpleDialogOption(
@@ -84,9 +84,5 @@ class AddPostController extends GetxController {
     } catch (e) {
       showSnackBar(e.toString(), context);
     }
-  }
-
-  void addPath(String path) {
-    filePath.value = path;
   }
 }

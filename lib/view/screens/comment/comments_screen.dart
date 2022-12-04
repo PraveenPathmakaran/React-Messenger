@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/services/firestore_methods.dart';
-import 'package:react_messenger/controller/user_controller.dart';
-import 'package:react_messenger/const/colors.dart';
+
+import '../../../const/colors.dart';
+import '../../../controller/user_controller.dart';
+import '../../../services/firestore_methods.dart';
 import '../../../widgets/widgets.dart';
 import 'widget/comment_card.dart';
 
 class CommentsScreen extends StatelessWidget {
-  final Map<String, dynamic> postSnapshotComment;
-
   CommentsScreen({super.key, required this.postSnapshotComment});
+  final Map<String, dynamic> postSnapshotComment;
   final TextEditingController _commentController = TextEditingController();
   final UserController userController = Get.put(UserController());
   @override
@@ -27,25 +27,28 @@ class CommentsScreen extends StatelessWidget {
                   centerTitle: false,
                   backgroundColor: lightDarColor,
                   elevation: 0),
-              body: StreamBuilder(
+              body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
                     .collection('posts')
-                    .doc(postSnapshotComment['postId'])
+                    .doc(postSnapshotComment['postId'] as String)
                     .collection('comments')
                     .orderBy(
                       'datePublished',
                       descending: true,
                     )
                     .snapshots(),
-                builder: (context, snapshot) {
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                        snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return circularProgressIndicator;
                   }
                   return ListView.builder(
                     itemCount: (snapshot.data!).docs.length,
-                    itemBuilder: (context, index) => CommentCard(
+                    itemBuilder: (BuildContext context, int index) =>
+                        CommentCard(
                       commentSnapShot: (snapshot.data!).docs[index],
-                      postId: postSnapshotComment['postId'],
+                      postId: postSnapshotComment['postId'] as String,
                     ),
                   );
                 },
@@ -61,7 +64,7 @@ class CommentsScreen extends StatelessWidget {
                       bottom: MediaQuery.of(context).viewInsets.bottom),
                   padding: const EdgeInsets.only(left: 16, right: 8),
                   child: Row(
-                    children: [
+                    children: <Widget>[
                       CircleAvatarWidget(
                         networkImagePath:
                             userController.userData.value!.photoUrl,
@@ -82,7 +85,7 @@ class CommentsScreen extends StatelessWidget {
                       InkWell(
                         onTap: () async {
                           await FirestoreMethods().postComments(
-                            postSnapshotComment['postId'],
+                            postSnapshotComment['postId'] as String,
                             _commentController.text,
                             userController.userData.value!.uid,
                             userController.userData.value!.username,

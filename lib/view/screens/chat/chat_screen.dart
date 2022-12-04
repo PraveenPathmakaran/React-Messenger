@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/controller/chat_controller.dart';
+import '../../../controller/chat_controller.dart';
+import '../../../controller/user_controller.dart';
 import '../../../widgets/widgets.dart';
 import 'widgets/chat_textfiled.dart';
 import 'widgets/message_container.dart';
@@ -17,27 +18,46 @@ class ChatScreen extends StatelessWidget {
   final String friendPhotoUrl;
 
   final ChatController chatController = Get.put(ChatController());
+  final UserController userController = Get.put(UserController());
 
   @override
   Widget build(BuildContext context) {
-    chatController.chat(friendUid);
-    return Scaffold(
-      appBar: AppBarWidget(
-        title: friendName,
-        centerTitle: false,
-        backgroundColor: const Color(0XFF2A3942),
-        elevation: 0,
-      ),
-      body: Obx(
-        () {
-          return StreamBuilder<QuerySnapshot<Object?>>(
+    chatController.chatDocId.value = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await userController.getUser();
+      await chatController.chat(friendUid);
+    });
+    return Obx(
+      () {
+        if (chatController.chatDocId.value == null ||
+            userController.userData.value == null) {
+          return circularProgressIndicator;
+        }
+        return Scaffold(
+          appBar: AppBar(
+            leadingWidth: 20,
+            title: Row(
+              children: <Widget>[
+                CircleAvatarWidget(
+                  networkImagePath: friendPhotoUrl,
+                ),
+                kWidth15,
+                Text(friendName),
+              ],
+            ),
+            centerTitle: false,
+            backgroundColor: const Color(0XFF2A3942),
+            elevation: 0,
+          ),
+          body: StreamBuilder<QuerySnapshot<Object?>>(
             stream: FirebaseFirestore.instance
                 .collection('chats')
                 .doc(chatController.chatDocId.value)
                 .collection('messages')
                 .orderBy('createdOn', descending: true)
                 .snapshots(),
-            builder: (context, AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
+            builder: (BuildContext context,
+                AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
               if (snapshot.hasError) {
                 return const Center(
                   child: Text('Something went wrong'),
@@ -52,12 +72,12 @@ class ChatScreen extends StatelessWidget {
 
               if (snapshot.hasData) {
                 return Column(
-                  children: [
+                  children: <Widget>[
                     Expanded(
                       child: ListView.builder(
                         reverse: true,
                         itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
+                        itemBuilder: (BuildContext context, int index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                             child: Row(
@@ -66,7 +86,7 @@ class ChatScreen extends StatelessWidget {
                                           .toString())
                                   ? MainAxisAlignment.end
                                   : MainAxisAlignment.start,
-                              children: [
+                              children: <Widget>[
                                 Flexible(
                                   child: MessageContainer(
                                     snapshot: snapshot,
@@ -89,9 +109,9 @@ class ChatScreen extends StatelessWidget {
 
               return const SizedBox();
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

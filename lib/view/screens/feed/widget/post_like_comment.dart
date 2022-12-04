@@ -2,19 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:react_messenger/controller/user_list_controller.dart';
+
 import '../../../../const/colors.dart';
 import '../../../../controller/user_controller.dart';
+import '../../../../controller/user_list_controller.dart';
 import '../../../../services/firestore_methods.dart';
+import '../../../../widgets/filtered_users_list.dart';
 import '../../../../widgets/widgets.dart';
 import '../../comment/comments_screen.dart';
 
 class PostLikeCommentWidget extends StatelessWidget {
   PostLikeCommentWidget({
-    Key? key,
+    super.key,
     required this.postSnapShot,
     required this.userController,
-  }) : super(key: key);
+  });
 
   final Map<String, dynamic> postSnapShot;
   final UserController userController;
@@ -27,21 +29,23 @@ class PostLikeCommentWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         //like column
-        children: [
+        children: <Widget>[
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Row(
-                children: [
+                children: <Widget>[
                   IconButton(
                     onPressed: () async {
                       await FirestoreMethods().likePost(
-                        postSnapShot['postId'],
+                        postSnapShot['postId'] as String,
                         userController.userData.value!.uid,
-                        postSnapShot['likes'],
+                        (postSnapShot['likes'] as List<dynamic>)
+                            .map((dynamic e) => e as String)
+                            .toList(),
                       );
                     },
-                    icon: postSnapShot['likes']
+                    icon: (postSnapShot['likes'] as List<dynamic>)
                             .contains(userController.userData.value!.uid)
                         ? const Icon(
                             Icons.favorite,
@@ -56,19 +60,21 @@ class PostLikeCommentWidget extends StatelessWidget {
               ),
               //like count
               GestureDetector(
-                  onTap: () async {
-                    userListController.userList.clear();
-                    await userListController
-                        .postLikesGet(postSnapShot['postId']);
+                onTap: () async {
+                  userListController.userList.clear();
+                  await userListController
+                      .postLikesGet(postSnapShot['postId'] as String);
 
-                    Get.off(() => FilteredUsersList(
-                          title: 'Likes',
-                        ));
-                  },
-                  child: postSnapShot['likes'].length == 0
-                      ? const Text('')
-                      : Text(
-                          'Liked by ${postSnapShot['likes'].length} people')),
+                  Get.to(() => FilteredUsersList(
+                        title: 'Likes',
+                      ));
+                },
+                child: (postSnapShot['likes'] as List<dynamic>).isEmpty
+                    ? const Text('')
+                    : Text(
+                        'Liked by ${(postSnapShot['likes'] as List<dynamic>).length} people',
+                      ),
+              ),
               kHeight10,
 
               //description
@@ -84,14 +90,14 @@ class PostLikeCommentWidget extends StatelessWidget {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
+            children: <Widget>[
               Row(
-                children: [
+                children: <Widget>[
                   IconButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => CommentsScreen(
+                        MaterialPageRoute<dynamic>(
+                          builder: (BuildContext context) => CommentsScreen(
                             postSnapshotComment: postSnapShot,
                           ),
                         ),
@@ -104,10 +110,10 @@ class PostLikeCommentWidget extends StatelessWidget {
                 ],
               ),
               // find comment count
-              StreamBuilder(
+              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
                     .collection('posts')
-                    .doc(postSnapShot['postId'])
+                    .doc(postSnapShot['postId'] as String)
                     .collection('comments')
                     .snapshots(),
                 builder: (BuildContext context,
@@ -125,8 +131,8 @@ class PostLikeCommentWidget extends StatelessWidget {
 
               kHeight10,
               Text(
-                DateFormat.MMMEd()
-                    .format(postSnapShot['datePublished'].toDate()),
+                DateFormat.MMMEd().format(
+                    (postSnapShot['datePublished'] as Timestamp).toDate()),
                 style: const TextStyle(fontSize: 10, color: secondaryColor),
               ),
             ],
@@ -138,7 +144,7 @@ class PostLikeCommentWidget extends StatelessWidget {
 
   Future<void> filteredListGet(String dataName) async {
     userListController.userList.clear();
-    userListController.userId = await postSnapShot['uid'];
+    userListController.userId = await postSnapShot['uid'] as String;
     await userListController.usersListGet(dataName);
   }
 }

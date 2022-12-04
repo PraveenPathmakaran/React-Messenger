@@ -1,17 +1,28 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 Future<String> pickImage(ImageSource source) async {
+  await Permission.camera.request();
+  if (await Permission.camera.status.isDenied) {
+    Get.snackbar('Error', 'Camera Permission denied');
+    return 'No image selected';
+  }
   final ImagePicker imagePicker = ImagePicker();
   try {
-    XFile? file = await imagePicker.pickImage(source: source, imageQuality: 10);
+    final XFile? file =
+        await imagePicker.pickImage(source: source, imageQuality: 10);
 
     if (file != null) {
-      String imagePath = await cropImage(imageFile: file.path);
+      final String imagePath = await cropImage(imageFile: file.path);
       return imagePath;
     }
   } catch (e) {
+    log(e.toString());
     return e.toString();
   }
 
@@ -19,10 +30,17 @@ Future<String> pickImage(ImageSource source) async {
 }
 
 Future<String> cropImage({required String imageFile}) async {
-  CroppedFile? croppedFile =
-      await ImageCropper().cropImage(sourcePath: imageFile);
-  if (croppedFile == null) return 'No image selected';
-  return croppedFile.path;
+  try {
+    final CroppedFile? croppedFile =
+        await ImageCropper().cropImage(sourcePath: imageFile);
+    if (croppedFile == null) {
+      return 'No image selected';
+    }
+    return croppedFile.path;
+  } catch (e) {
+    Get.snackbar('Error', 'Image Error');
+  }
+  return '';
 }
 
 void showSnackBar(String content, BuildContext context) {
@@ -33,13 +51,13 @@ void showSnackBar(String content, BuildContext context) {
   );
 }
 
-showImageAlert(String path, BuildContext context) {
+void showImageAlert(String path, BuildContext context) {
   showDialog(
     context: context,
-    builder: (context) => SizedBox(
+    builder: (BuildContext context) => SizedBox(
       child: AlertDialog(
         actionsAlignment: MainAxisAlignment.center,
-        actions: [
+        actions: <Widget>[
           IconButton(
               onPressed: () {
                 Navigator.pop(context);

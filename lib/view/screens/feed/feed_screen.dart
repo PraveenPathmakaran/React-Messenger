@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:react_messenger/const/colors.dart';
-import 'package:react_messenger/view/screens/feed/widget/post_card.dart';
-import 'package:react_messenger/widgets/widgets.dart';
+
+import '../../../const/colors.dart';
+import '../../../widgets/widgets.dart';
+import 'widget/post_card.dart';
 
 class FeedScreen extends StatelessWidget {
   FeedScreen({super.key});
@@ -17,24 +18,24 @@ class FeedScreen extends StatelessWidget {
         backgroundColor: lightDarColor,
         elevation: 0,
       ),
-      body: StreamBuilder(
+      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance.collection('posts').snapshots(),
-        builder: (context,
+        builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return circularProgressIndicator;
           }
           return SingleChildScrollView(
             child: Column(
-              children: [
+              children: <Widget>[
                 ListView.separated(
                   controller: scrollController,
                   shrinkWrap: true,
                   itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) => PostCard(
+                  itemBuilder: (BuildContext context, int index) => PostCard(
                     postSnapShot: snapshot.data!.docs[index].data(),
                   ),
-                  separatorBuilder: (context, index) {
+                  separatorBuilder: (BuildContext context, int index) {
                     return const Divider(
                       color: mobileBackgroundColor,
                     );

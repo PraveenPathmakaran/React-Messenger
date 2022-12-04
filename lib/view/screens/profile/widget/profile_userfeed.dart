@@ -19,27 +19,27 @@ class ProfileUsersFeed extends StatelessWidget {
         backgroundColor: mobileBackgroundColor,
         elevation: 0,
       ),
-      body: StreamBuilder(
+      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('posts')
             .where('uid', isEqualTo: userData)
             .snapshots(),
-        builder: (context,
+        builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return circularProgressIndicator;
           }
           return SingleChildScrollView(
             child: Column(
-              children: [
+              children: <Widget>[
                 ListView.separated(
                   controller: scrollController,
                   shrinkWrap: true,
                   itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) => PostCard(
+                  itemBuilder: (BuildContext context, int index) => PostCard(
                     postSnapShot: snapshot.data!.docs[index].data(),
                   ),
-                  separatorBuilder: (context, index) {
+                  separatorBuilder: (BuildContext context, int index) {
                     return const Divider(
                       thickness: 2,
                     );

@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
-import '../services/auth_methods.dart';
 
 import '../models/user.dart';
+import '../services/auth_methods.dart';
 
 class UserController extends GetxController {
   final Rxn<User> userData = Rxn<User>();

@@ -6,11 +6,11 @@ Column buildStatColumn(
   double width,
 ) {
   return Column(
-    children: [
+    children: <Widget>[
       Text(
         num.toString(),
         style: const TextStyle(
-          fontSize: 22,
+          fontSize: 17,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -21,8 +21,8 @@ Column buildStatColumn(
         child: Text(
           label,
           style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w400,
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
             color: Colors.grey,
           ),
         ),

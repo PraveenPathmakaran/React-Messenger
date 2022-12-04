@@ -55,8 +55,16 @@ class UpdateScreen extends StatelessWidget {
                         else
                           GestureDetector(
                             onTap: () async {
-                              signUpController.image.value =
-                                  await pickImage(ImageSource.gallery);
+                              try {
+                                final String image =
+                                    await pickImage(ImageSource.gallery);
+
+                                if (image != 'No image selected') {
+                                  signUpController.image.value = image;
+                                }
+                              } catch (e) {
+                                showSnackBar('Image not Selected', context);
+                              }
                             },
                             child: CircleAvatarWidget(
                               networkImagePath: profileUrl,

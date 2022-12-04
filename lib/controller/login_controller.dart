@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../services/auth_methods.dart';
 import '../utils/utils.dart';
@@ -22,13 +23,16 @@ class LoginController extends GetxController {
       return;
     } //for remove lint
     if (res == 'success') {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute<Widget>(
-            builder: (BuildContext context) => const MobileScreenLayout(),
-          ),
-          (Route<dynamic> route) => false);
-      emailController.clear();
-      passwordController.clear();
+      if (await Permission.storage.status.isGranted) {
+        await Future<dynamic>.delayed(
+          const Duration(seconds: 2),
+        );
+        Get.off(const MobileScreenLayout());
+        emailController.clear();
+        passwordController.clear();
+      } else {
+        Get.snackbar('Error', 'Permission denied');
+      }
     } else {
       showSnackBar(res, context);
     }
@@ -39,7 +43,14 @@ class LoginController extends GetxController {
   Future<void> googleSignup() async {
     final String result = await AuthMethods().googleSingUp();
     if (result == 'Success') {
-      Get.off(() => const MobileScreenLayout());
+      if (await Permission.storage.status.isGranted) {
+        await Future<dynamic>.delayed(
+          const Duration(seconds: 2),
+        );
+        Get.off(() => const MobileScreenLayout());
+      } else {
+        Get.snackbar('Error', 'Permission denied');
+      }
     } else {
       Get.snackbar('Error', result);
     }
@@ -48,7 +59,14 @@ class LoginController extends GetxController {
   Future<void> googleLogin(BuildContext context) async {
     final String result = await AuthMethods().googleLogin(context);
     if (result == 'Success') {
-      Get.off(() => const MobileScreenLayout());
+      if (await Permission.storage.status.isGranted) {
+        await Future<dynamic>.delayed(
+          const Duration(seconds: 2),
+        );
+        Get.off(() => const MobileScreenLayout());
+      } else {
+        Get.snackbar('Error', 'Permission denied');
+      }
     } else {
       Get.snackbar('Error', result);
     }
@@ -56,8 +74,8 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
+    emailController.clear();
+    passwordController.clear();
     super.onClose();
   }
 }

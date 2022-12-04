@@ -4,6 +4,15 @@ class Report {
       required this.postId,
       required this.postUserId,
       required this.reportUserId});
+
+  factory Report.fromSnap(Map<String, dynamic> snap) {
+    return Report(
+      postId: snap['postId'] as String,
+      postUserId: snap['postUserId'] as String,
+      reportUserId: snap['reportUserId'] as String,
+      reason: snap['reason'] as String,
+    );
+  }
   final String postId;
   final String postUserId;
   final String reportUserId;
@@ -15,13 +24,4 @@ class Report {
         'reportUserId': reportUserId,
         'reason': reason,
       };
-
-  factory Report.fromSnap(dynamic snap) {
-    return Report(
-      postId: snap['postId'] as String,
-      postUserId: snap['postUserId'] as String,
-      reportUserId: snap['reportUserId'] as String,
-      reason: snap['reason'] as String,
-    );
-  }
 }

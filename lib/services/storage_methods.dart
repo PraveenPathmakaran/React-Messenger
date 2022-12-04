@@ -1,9 +1,11 @@
 import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/controller/addpost_controller.dart';
 import 'package:uuid/uuid.dart';
+
+import '../controller/addpost_controller.dart';
 
 class StorageMethods {
   final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -27,7 +29,7 @@ class StorageMethods {
 
     //upload progress
 
-    uploadTask.snapshotEvents.listen((event) {
+    uploadTask.snapshotEvents.listen((TaskSnapshot event) {
       Get.find<AddPostController>().progress.value =
           ((event.bytesTransferred.toDouble() / event.totalBytes.toDouble()) *
                   100)

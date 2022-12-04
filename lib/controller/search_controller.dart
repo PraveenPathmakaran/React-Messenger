@@ -7,7 +7,8 @@ class SearchController extends GetxController {
   final Rx<bool> isShowUsers = false.obs;
   String name = '';
 
-  final Rxn<QuerySnapshot<Map<String, dynamic>>> postDocumentList = Rxn();
+  final Rxn<QuerySnapshot<Map<String, dynamic>>> postDocumentList =
+      Rxn<QuerySnapshot<Map<String, dynamic>>>();
   Future<void> initSearchingPost(String textEntered) async {
     if (textEntered == '') {
       return;
@@ -16,7 +17,7 @@ class SearchController extends GetxController {
         .collection('user')
         .where(
           'username',
-          isEqualTo: textEntered,
+          isGreaterThanOrEqualTo: textEntered,
         )
         .get();
   }

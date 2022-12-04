@@ -2,10 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/widgets/widgets.dart';
-import 'view/screens/home/home_screen.dart';
-import 'view/screens/login/login_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'const/colors.dart';
+import 'view/screens/login/login_screen.dart';
+import 'view/screens/splashscreen/splash_screen.dart';
+import 'widgets/widgets.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,17 +19,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await getPermission();
+    });
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'React Messenger',
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: mobileBackgroundColor,
       ),
-      home: StreamBuilder(
+      home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
           if (snapshot.hasData) {
-            return const MobileScreenLayout();
+            return const SplashScreen();
           } else if (snapshot.hasError) {
             return Center(
               child: Text('${snapshot.error}'),
@@ -41,5 +45,13 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Future<void> getPermission() async {
+    try {
+      await Permission.storage.request();
+    } catch (e) {
+      Get.snackbar('Error', 'Permission exception');
+    }
   }
 }

@@ -9,16 +9,19 @@ class ReportController extends GetxController {
   String result = 'error';
   Rx<bool> isLoading = false.obs;
   bool mounted = true;
-  postReport(String postId, String postUserid, String reportedUserId,
-      BuildContext context) async {
+  Future<void> postReport(String postId, String postUserid,
+      String reportedUserId, BuildContext context) async {
     isLoading.value = true;
-    result = await FirestoreMethods().reportPost({
-      'postId': postId,
-      'postUserId': postUserid,
-      'reportUserId': reportedUserId,
-      'reason': reportTextEditingController.text,
-    });
+    result = await FirestoreMethods().reportPost(
+      <String, dynamic>{
+        'postId': postId,
+        'postUserId': postUserid,
+        'reportUserId': reportedUserId,
+        'reason': reportTextEditingController.text,
+      },
+    );
     isLoading.value = false;
+    reportTextEditingController.clear();
     if (!mounted) {
       return;
     }

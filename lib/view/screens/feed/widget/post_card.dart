@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:react_messenger/controller/post_controller.dart';
-import 'package:react_messenger/const/colors.dart';
-import 'package:react_messenger/view/screens/feed/widget/post_image_widget.dart';
-import 'package:react_messenger/view/screens/feed/widget/post_like_comment.dart';
-import 'package:react_messenger/view/screens/feed/widget/postscreen_header.dart';
+
+import '../../../../const/colors.dart';
+import '../../../../controller/post_controller.dart';
 import '../../../../controller/user_controller.dart';
 import '../../../../widgets/widgets.dart';
+import 'post_image_widget.dart';
+import 'post_like_comment.dart';
+import 'postscreen_header.dart';
 
 class PostCard extends StatelessWidget {
   PostCard({super.key, required this.postSnapShot});
@@ -25,7 +26,7 @@ class PostCard extends StatelessWidget {
                 color: lightDarColor,
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     //Header Section
                     PostHeaderSection(postSnapShot: postSnapShot),
                     //Image Section

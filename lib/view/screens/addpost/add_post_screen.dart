@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:react_messenger/const/const.dart';
-import 'package:react_messenger/controller/addpost_controller.dart';
-import 'package:react_messenger/controller/user_controller.dart';
+import '../../../const/const.dart';
+import '../../../controller/addpost_controller.dart';
+import '../../../controller/user_controller.dart';
 
 import '../../../widgets/widgets.dart';
 
@@ -16,15 +16,19 @@ class AddPostScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    userController.userData.value = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await userController.getUser();
+    });
     final double height = MediaQuery.of(context).size.width * 60 / 100;
     final double widht = MediaQuery.of(context).size.width * 90 / 100;
     return Obx(
-      (() {
+      () {
         return addPostController.isLoading.value
             ? Center(
                 child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   Text(
                     addPostController.progress.value.toString(),
                     style: const TextStyle(
@@ -45,7 +49,7 @@ class AddPostScreen extends StatelessWidget {
                     addPostController.filePath.value == 'No image selected'
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       GestureDetector(
                         onTap: () => addPostController.selectImage(context),
                         child: Lottie.asset(
@@ -73,7 +77,7 @@ class AddPostScreen extends StatelessWidget {
                       height: MediaQuery.of(context).size.height,
                       child: SingleChildScrollView(
                         child: Column(
-                          children: [
+                          children: <Widget>[
                             //image container
 
                             Container(
@@ -99,8 +103,7 @@ class AddPostScreen extends StatelessWidget {
                                   focusedBorder: OutlineInputBorder(
                                       borderSide:
                                           BorderSide(color: Colors.white)),
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide()),
+                                  border: OutlineInputBorder(),
                                 ),
                               ),
                             ),
@@ -136,7 +139,7 @@ class AddPostScreen extends StatelessWidget {
                       ),
                     ),
                   );
-      }),
+      },
     );
   }
 }

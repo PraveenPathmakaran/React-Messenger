@@ -12,13 +12,13 @@ class SearchAppBarTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: [
+      children: <Widget>[
         Expanded(
           child: TextFormField(
             cursorColor: Colors.white,
             controller: searchController.searchController,
             decoration: const InputDecoration(
-              labelText: "Search for a user",
+              labelText: 'Search for a user',
               labelStyle: TextStyle(color: Colors.white),
             ),
             onFieldSubmitted: (String value) {

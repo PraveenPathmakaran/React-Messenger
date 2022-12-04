@@ -4,18 +4,19 @@ import 'package:get/get.dart';
 import 'user_controller.dart';
 
 class ChatController extends GetxController {
-  CollectionReference chats = FirebaseFirestore.instance.collection('chats');
+  CollectionReference<Object?> chats =
+      FirebaseFirestore.instance.collection('chats');
 
   final UserController userController = Get.put(UserController());
 
-  Rxn<String> chatDocId = Rxn();
+  Rxn<String> chatDocId = Rxn<String>();
   TextEditingController textController = TextEditingController();
 
   void sendMessage(String message) {
     if (message == '') {
       return;
     }
-    chats.doc(chatDocId.value).collection('messages').add({
+    chats.doc(chatDocId.value).collection('messages').add(<String, dynamic>{
       'createdOn': FieldValue.serverTimestamp(),
       'uid': userController.userData.value!.uid,
       'message': message
@@ -27,7 +28,7 @@ class ChatController extends GetxController {
     return friend == userController.userData.value!.uid;
   }
 
-  Alignment getAlignment(friend) {
+  Alignment getAlignment(String friend) {
     if (friend == userController.userData.value!.uid) {
       return Alignment.topRight;
     }
@@ -36,18 +37,18 @@ class ChatController extends GetxController {
 
   Future<void> chat(String friendUid) async {
     await chats
-        .where('users', isEqualTo: {
+        .where('users', isEqualTo: <String, dynamic>{
           friendUid: null,
           userController.userData.value!.uid: null
         })
         .limit(1)
         .get()
-        .then((QuerySnapshot querySnapshot) {
+        .then((QuerySnapshot<Object?> querySnapshot) {
           if (querySnapshot.docs.isNotEmpty) {
             chatDocId.value = querySnapshot.docs.single.id;
           } else {
-            chats.add({
-              'users': {
+            chats.add(<String, dynamic>{
+              'users': <String, dynamic>{
                 userController.userData.value!.uid: null,
                 friendUid: null,
               }
@@ -56,6 +57,6 @@ class ChatController extends GetxController {
             });
           }
         })
-        .catchError((error) {});
+        .catchError((dynamic error) {});
   }
 }

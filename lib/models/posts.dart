@@ -14,9 +14,9 @@ class Post {
   final String description;
   final String uid;
   final String postId;
-  final datePublished;
+  final DateTime datePublished;
   final String postUrl;
-  final likes;
+  final List<String> likes;
   final bool status;
   final String imageId;
 
@@ -31,17 +31,19 @@ class Post {
         'imageId': imageId,
       };
 
-  static Post fromSnap(DocumentSnapshot<Object?> snap) {
-    final Map<String, dynamic> snapshot = snap.data() as Map<String, dynamic>;
+  static Future<Post> fromSnap(DocumentSnapshot<Object?> snap) async {
+    final Map<String, dynamic> snapshot = snap.data()! as Map<String, dynamic>;
 
     return Post(
         uid: snapshot['uid'] as String,
         description: snapshot['description'] as String,
         postId: snapshot['postId'] as String,
-        datePublished: snapshot['datePublished'] as String,
+        datePublished: snapshot['datePublished'] as DateTime,
         postUrl: snapshot['postUrl'] as String,
-        likes: snapshot['likes'],
-        status: snapshot['status'],
-        imageId: snapshot['imageId']);
+        likes: (snapshot['likes'] as List<dynamic>)
+            .map((dynamic e) => e as String)
+            .toList(),
+        status: snapshot['status'] as bool,
+        imageId: snapshot['imageId'] as String);
   }
 }

@@ -6,11 +6,11 @@ import '../../../../utils/utils.dart';
 
 class PostImageWidget extends StatelessWidget {
   const PostImageWidget({
-    Key? key,
+    super.key,
     required this.postSnapShot,
     required this.userController,
     required this.postController,
-  }) : super(key: key);
+  });
 
   final Map<String, dynamic> postSnapShot;
   final UserController userController;
@@ -21,31 +21,38 @@ class PostImageWidget extends StatelessWidget {
     return GestureDetector(
       onDoubleTap: () async {
         await FirestoreMethods().likePost(
-          postSnapShot['postId'],
+          postSnapShot['postId'] as String,
           userController.userData.value!.uid,
-          postSnapShot['likes'],
+          (postSnapShot['likes'] as List<dynamic>)
+              .map((dynamic e) => e as String)
+              .toList(),
         );
 
         postController.isLikeAnimating.value = true;
       },
       child: Stack(
         alignment: Alignment.center,
-        children: [
+        children: <Widget>[
           SizedBox(
             height: MediaQuery.of(context).size.width * 0.9,
             width: double.infinity,
             child: GestureDetector(
-              onTap: () => showImageAlert(postSnapShot['postUrl'], context),
+              onTap: () =>
+                  showImageAlert(postSnapShot['postUrl'] as String, context),
               child: Image.network(
-                postSnapShot['postUrl'],
+                postSnapShot['postUrl'] as String,
                 fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
                   return Center(
-                    child: Image.asset("assets/images/placeholder.png"),
+                    child: Image.asset('assets/images/placeholder.png'),
                   );
                 },
-                errorBuilder: (context, error, stackTrace) =>
+                errorBuilder: (BuildContext context, Object error,
+                        StackTrace? stackTrace) =>
                     Image.asset('assets/images/placeholder.png'),
               ),
             ),

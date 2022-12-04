@@ -5,9 +5,9 @@ import '../../../../controller/chat_controller.dart';
 
 class MessageTextField extends StatelessWidget {
   const MessageTextField({
-    Key? key,
+    super.key,
     required this.chatController,
-  }) : super(key: key);
+  });
 
   final ChatController chatController;
 
