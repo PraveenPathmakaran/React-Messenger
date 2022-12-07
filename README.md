@@ -37,6 +37,10 @@ image_picker
 
 ```
 
+## Screenshots
+
+![App Screenshot](https://raw.github.com/PraveenPathmakaran/React-Messenger/master/assets/images/banner.png)
+
 
 ## Contributing
 
