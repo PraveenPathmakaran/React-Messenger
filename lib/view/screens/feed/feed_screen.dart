@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../const/colors.dart';
+import '../../../const/const.dart';
 import '../../../widgets/widgets.dart';
 import 'widget/post_card.dart';
 
@@ -12,8 +13,11 @@ class FeedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarWidget(
-        title: 'React Messenger',
+      appBar: AppBar(
+        title: Image.asset(
+          logoPath,
+          width: MediaQuery.of(context).size.width / 2,
+        ),
         centerTitle: false,
         backgroundColor: lightDarColor,
         elevation: 0,

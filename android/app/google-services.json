@@ -7,6 +7,42 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:114601649993:android:710a511ba710052618dc98",
+        "android_client_info": {
+          "package_name": "com.example.react_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "114601649993-oh2nlb5bjqberbfgct0e5atun2h6df2f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADQwLopfmY8Z18AOcrxojIcnDFxg6fQMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "114601649993-oh2nlb5bjqberbfgct0e5atun2h6df2f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "114601649993-49j7q344kd10diq9aoc102l4t6hqq5tc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.reactMessenger"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:114601649993:android:16e3043838c1c6a218dc98",
         "android_client_info": {
           "package_name": "com.example.react_messenger"
@@ -18,6 +54,50 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.react_messenger",
+            "certificate_hash": "d0c81238dbf635bbec856572c062f32204b5e635"
+          }
+        },
+        {
+          "client_id": "114601649993-oh2nlb5bjqberbfgct0e5atun2h6df2f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADQwLopfmY8Z18AOcrxojIcnDFxg6fQMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "114601649993-oh2nlb5bjqberbfgct0e5atun2h6df2f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "114601649993-49j7q344kd10diq9aoc102l4t6hqq5tc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.reactMessenger"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:114601649993:android:a4d3e67e0bfa3e9218dc98",
+        "android_client_info": {
+          "package_name": "com.reactmessenger.social_media"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "114601649993-p18q88dl5kp2h6ms501jgnoj1miih0v9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.reactmessenger.social_media",
             "certificate_hash": "d0c81238dbf635bbec856572c062f32204b5e635"
           }
         },

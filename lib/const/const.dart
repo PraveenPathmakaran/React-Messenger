@@ -10,3 +10,5 @@ final ButtonStyle buttonStyle = ButtonStyle(
     ),
   ),
 );
+
+const String logoPath = 'assets/images/mainlogo.png';

@@ -1,16 +1,50 @@
-# react_messenger
+# React Messenger
 
-A new Flutter project.
+Social Media Application Using flutter and Kotlin.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+```python
+## Features:-
 
-A few resources to get you started if this is your first Flutter project:
+User authentication using email-password and google
+Firestore database,firestore storage
+Image cropping
+Upload and remove post
+Like and comment post
+User profile edit
+Search for user
+Follow/Unfollow users
+Live Chat with other users
+Seperate users feed post screen
+Report post
+Admin panel
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Technology Used:-
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Flutter
+Dart
+Firebase
+## Packages:-
+
+firebase_auth
+firebase_core
+firebase_storage
+get
+google_sign_in
+http
+image_cropper
+image_picker
+
+```
+
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first
+to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+
+[Contact](praveenpathmakaran@gmail.com)

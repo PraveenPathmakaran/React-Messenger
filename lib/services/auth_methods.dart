@@ -87,7 +87,20 @@ class AuthMethods {
         res = 'Please enter all the fieild';
       }
     } catch (err) {
+      log(err.toString());
       res = err.toString();
+      if (err.toString() ==
+          '[firebase_auth/invalid-email] The email address is badly formatted.') {
+        res = 'Please enter a valid email';
+      }
+      if (err.toString() ==
+          '[firebase_auth/user-not-found] There is no user record corresponding to this identifier. The user may have been deleted.') {
+        res = 'User not found';
+      }
+      if (err.toString() ==
+          '[firebase_auth/wrong-password] The password is invalid or the user does not have a password.') {
+        res = 'Incorrect password';
+      }
     }
     return res;
   }

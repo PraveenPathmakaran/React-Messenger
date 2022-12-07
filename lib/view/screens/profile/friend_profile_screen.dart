@@ -17,6 +17,7 @@ class FriendProfileScreen extends StatelessWidget {
 
   final FriendProfileScreenController friendProfileScreenController =
       Get.put(FriendProfileScreenController());
+
   final UserController userController = Get.put(UserController());
   final UserListController userListController = Get.put(UserListController());
   @override
